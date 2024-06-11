@@ -208,34 +208,33 @@
             <h3><a href="https://github.com/ItsPyDevs/Simple-Python-WebHook-Nuker" target="_blank">Simple-Python-WebHook-Nuker</a></h3>
             <p>Send Discord Message With WebHook ! (python)</p>
         </div>
+        -->
     </div>
-    -->
     <script>
         const username = 'ItsPyDevs'; // Remplacez par le nom d'utilisateur GitHub
+        const container = document.getElementById("projets-container");
         function fetchGitHubStats() {
             try {
                 fetch(`https://api.github.com/users/${username}/repos`)
-                  .then(response => {
+                .then(response => {
                     if (!response.ok) {
-                      throw new Error(`HTTP error! status: ${response.status}`);
+                        throw new Error(`HTTP error! status: ${response.status}`);
                     }
                     return response.json();
-                  })
-                  .then(data => {
+                })
+                .then(data => {
                     data.forEach(repo => {
-                      console.log(`Name: ${repo.name}, URL: ${repo.html_url}`);
+                        container.innerHTML = container.innerHTML+`<div class="projet"><h3><a href="${repo.html_url}" target="_blank">${repo.name}</a></h3><p>${repo.description}</p></div>`;
+                        console.log(`Name: ${repo.name}, URL: ${repo.html_url}`);
                     });
-                  })
-                  .catch(error => {
+                })
+                .catch(error => {
                     console.error('Error fetching repositories:', error);
-                  });
-
-                
+                });
             } catch (error) {
                 console.error('Erreur lors de la récupération des statistiques GitHub:', error);
             }
         }
-
         fetchGitHubStats();
     </script>
     <div class="button-container">

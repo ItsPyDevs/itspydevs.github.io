@@ -8,21 +8,15 @@
     <link rel="stylesheet" href="./assets/css/imports.css">
     <link rel="stylesheet" href="./assets/css/general.css">
     <style>
-        body {
-            background-color: #f9f9f9;
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            background-image: url('./assets/img/1.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-        }
         
-        @media (max-width: 600px) {
+        @media screen and (max-width: 600px) {
             body {
                 background-image: url('./assets/img/2.png');
+            }
+        }
+        @media screen and (min-width: 600px) {
+            body {
+                background-image: url('./assets/img/1.png');
             }
         }
         
@@ -115,18 +109,5 @@
         <a href="/comments.html">Entrer en Contact</a>
         <a href="/stats.html">Statistiques GitHub</a>
     </div>
-
-    <script>
-        function updateBackgroundImage() {
-            var body = document.body;
-            if (window.innerWidth <= 600) {
-                body.style.backgroundImage = "url('./assets/img/2.png')";
-            } else {
-                body.style.backgroundImage = "url('./assets/img/1.png')";
-            }
-        }
-        window.addEventListener('resize', updateBackgroundImage);
-        window.addEventListener('load', updateBackgroundImage);
-    </script>
 </body>
 </html>

@@ -162,54 +162,7 @@
 </head>
 <body>
     <h1>Mes Projets Github</h1>
-    <div id="projets-container">
-        <!--
-        <div class="projet">
-            <h3><a href="https://github.com/ItsPyDevs/AskIfGay-" target="_blank">AskIfGay</a></h3>
-            <p>all in name. (python)</p>
-        </div>
-        <div class="projet">
-            <h3><a href="https://github.com/ItsPyDevs/itspydevs.github.io" target="_blank">itspydevs.github.io</a></h3>
-            <p>this site. (html/css/js)</p>
-        </div>
-        <div class="projet">
-            <h3><a href="https://github.com/ItsPyDevs/TimerApp" target="_blank">TimerApp</a></h3>
-            <p>Simple app to show time (C#)</p>
-        </div>
-        <div class="projet">
-            <h3><a href="https://github.com/ItsPyDevs/TicTacToe" target="_blank">TicTacToe</a></h3>
-            <p>TicTacToe system (python)</p>
-        </div>
-        <div class="projet">
-            <h3><a href="https://github.com/ItsPyDevs/ItsPyDevs" target="_blank">ItsPyDevs</a></h3>
-            <p>my github description (Readme.md)</p>
-        </div>
-        <div class="projet">
-            <h3><a href="https://github.com/ItsPyDevs/TTS-python-app" target="_blank">TTS-python-app</a></h3>
-            <p>Simple Tkinter app for TTS things (python)</p>
-        </div>
-        <div class="projet">
-            <h3><a href="https://github.com/ItsPyDevs/ChloeV2" target="_blank">ChloeV2</a></h3>
-            <p>simple Discord bot (python)</p>
-        </div>
-        <div class="projet">
-            <h3><a href="https://github.com/ItsPyDevs/Pycore" target="_blank">Pycoré</a></h3>
-            <p>Pycoré a simple python executor (python)</p>
-        </div>
-        <div class="projet">
-            <h3><a href="https://github.com/ItsPyDevs/GitLive" target="_blank">GitLive</a></h3>
-            <p>Get Repo Stats in Live (python)</p>
-        </div>
-        <div class="projet">
-            <h3><a href="https://github.com/ItsPyDevs/Simple-Discord-Log-Bot" target="_blank">Simple-Discord-Log-Bot</a></h3>
-            <p>A simple discord bot (Javascript)</p>
-        </div>
-        <div class="projet">
-            <h3><a href="https://github.com/ItsPyDevs/Simple-Python-WebHook-Nuker" target="_blank">Simple-Python-WebHook-Nuker</a></h3>
-            <p>Send Discord Message With WebHook ! (python)</p>
-        </div>
-        -->
-    </div>
+    <div id="projets-container"></div>
     <script>
         const username = 'ItsPyDevs'; // Remplacez par le nom d'utilisateur GitHub
         const container = document.getElementById("projets-container");
@@ -225,7 +178,6 @@
                 .then(data => {
                     data.forEach(repo => {
                         container.innerHTML = container.innerHTML+`<div class="projet"><h3><a href="${repo.html_url}" target="_blank">${repo.name}</a></h3><p>${repo.description}</p></div>`;
-                        console.log(`Name: ${repo.name}, URL: ${repo.html_url}`);
                     });
                 })
                 .catch(error => {

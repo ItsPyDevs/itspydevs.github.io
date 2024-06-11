@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="../assets/img/FAVICON.png" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ItsPyDevs, Le Site.</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --primary-color-hover: #0056b3;
+            --background-color: #121212;
+            --text-color: #e08282;
+            --secondary-text-color: #ffffff;
+            --border-color: #000000;
+            --box-shadow-color: rgba(255, 255, 255, 0.1);
+            --button-background-color: #dd0101;
+            --button-hover-color: #ff0000;
+            --border-radius: 8px;
+            --transition-duration: 0.3s;
+            --font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            font-family: var(--font-family);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            box-sizing: border-box;
+            overflow-x: hidden;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: var(--text-color);
+            animation: fadeInDown var(--transition-duration) ease;
+        }
+
+        p {
+            font-size: 1.125rem;
+            margin-bottom: 20px;
+            color: var(--secondary-text-color);
+            max-width: 800px;
+            animation: fadeInUp var(--transition-duration) ease;
+        }
+
+        #github-stats-container {
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            animation: fadeInUp var(--transition-duration) ease;
+        }
+
+        .stat-item {
+            margin-bottom: 10px;
+        }
+
+        .stat-item label {
+            font-weight: bold;
+            margin-right: 10px;
+            color: var(--secondary-text-color);
+        }
+
+        .stat-item span {
+            color: var(--text-color);
+        }
+
+        .github-stats-image, .github-contributions-image {
+            margin-top: 20px;
+            max-width: 100%;
+            height: auto;
+            border-radius: var(--border-radius);
+            box-shadow: 0 0 10px 0 var(--box-shadow-color);
+            animation: fadeInUp var(--transition-duration) ease;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            h1 { font-size: 2rem; }
+            p { font-size: 1rem;  }
+            #github-stats-container { padding: 15px; }
+            .stat-item label, .stat-item span { font-size: 0.875rem; }
+            .github-stats-image, .github-contributions-image { margin-top: 15px; }
+        }
+
+        .button-container { margin-top: 20px; }
+
+        .button-container a {
+            background-color: var(--button-background-color);
+            color: #fff;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            transition: background-color var(--transition-duration) ease, transform var(--transition-duration) ease;
+            display: inline-block;
+            font-size: 1rem;
+        }
+
+        .button-container a:hover {
+            background-color: var(--button-hover-color);
+            transform: translateY(-3px);
+        }
+
+    </style>
+</head>
+<body>
+    <h1>Stats GitHub</h1>
+    <div id="github-stats-container">
+        <div class="stat-item">
+            <label>Nombre de dépôts :</label>
+            <span id="repo-count">...</span>
+        </div>
+        <div class="stat-item">
+            <label>Nombre d'étoiles :</label>
+            <span id="star-count">...</span>
+        </div>
+        <div class="stat-item">
+            <label>Nombre de followers :</label>
+            <span id="follower-count">...</span>
+        </div>
+    </div>
+    <img class="github-stats-image" src="https://github-readme-stats.vercel.app/api/top-langs/?username=ItsPyDevs&layout=donut" alt="Top Langs">
+    <div class="contributions">
+        <a>Contributions:</a>
+    </div>
+    <img class="github-contributions-image" src="https://ghchart.rshah.org/ItsPyDevs" alt="GitHub Contributions">
+    <div class="button-container">
+        <a href="../index.html">Retour</a>
+    </div>
+
+    <script>
+        async function fetchGitHubStats() {
+            try {
+                const response = await fetch('https://api.github.com/users/ItsPyDevs');
+                const data = await response.json();
+                
+                document.getElementById('repo-count').textContent = data.public_repos;
+                document.getElementById('star-count').textContent = data.public_gists; // Assuming this to be stars
+                document.getElementById('follower-count').textContent = data.followers;
+            } catch (error) {
+                console.error('Erreur lors de la récupération des statistiques GitHub:', error);
+            }
+        }
+
+        fetchGitHubStats();
+    </script>
+</body>
+</html>

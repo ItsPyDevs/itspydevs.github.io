@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ItsPyDevs, Le site.</title>
+    <link rel="icon" href="../assets/img/FAVICON.png" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --primary-color-hover: #0056b3;
+            --background-color: #121212;
+            --text-color: #e08282;
+            --secondary-text-color: #ffffff;
+            --border-color: #000000;
+            --box-shadow-color: rgba(255, 255, 255, 0.1);
+            --button-background-color: #dd0101;
+            --button-hover-color: #ff0000;
+            --border-radius: 8px;
+            --transition-duration: 0.3s;
+            --font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            font-family: var(--font-family);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            box-sizing: border-box;
+            overflow-x: hidden;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--text-color);
+            animation: fadeInDown var(--transition-duration) ease;
+        }
+
+        #projets-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-gap: 10px;
+            width: 100%;
+            max-width: 1000px;
+            animation: fadeInUp var(--transition-duration) ease;
+        }
+
+        .projet {
+            background-color: #742626;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            transition: box-shadow var(--transition-duration) ease, transform var(--transition-duration) ease, background-color var(--transition-duration) ease;
+        }
+
+        .projet:hover {
+            box-shadow: 0 0 15px 0 var(--box-shadow-color);
+            transform: scale(1.05) rotate(2deg);
+            background-color: #8b3a3a;
+        }
+
+        .projet h3 {
+            color: var(--text-color);
+            font-size: 1.25rem;
+            margin-bottom: 5px;
+            transition: color var(--transition-duration) ease;
+        }
+
+        .projet p {
+            color: var(--secondary-text-color);
+            font-size: 0.875rem;
+            margin-bottom: 10px;
+        }
+
+        .projet a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color var(--transition-duration) ease, background-color var(--transition-duration) ease;
+        }
+
+        .projet a:hover {
+            color: var(--primary-color-hover);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .button-container {
+            margin-top: 20px;
+        }
+
+        .button-container a {
+            background-color: var(--button-background-color);
+            color: #fff;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            transition: background-color var(--transition-duration) ease, transform var(--transition-duration) ease, box-shadow var(--transition-duration) ease;
+            display: inline-block;
+            font-size: 1rem;
+        }
+
+        .button-container a:hover {
+            background-color: var(--button-hover-color);
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .projet h3 {
+                font-size: 1rem;
+            }
+
+            .projet p {
+                font-size: 0.75rem;
+            }
+
+            .button-container a {
+                padding: 8px 16px;
+                font-size: 0.875rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Mes Projets Github</h1>
+    <div id="projets-container">
+        <div class="projet">
+            <h3><a href="https://github.com/ItsPyDevs/AskIfGay-" target="_blank">AskIfGay</a></h3>
+            <p>all in name. (python)</p>
+        </div>
+        <div class="projet">
+            <h3><a href="https://github.com/ItsPyDevs/itspydevs.github.io" target="_blank">itspydevs.github.io</a></h3>
+            <p>this site. (html/css/js)</p>
+        </div>
+        <div class="projet">
+            <h3><a href="https://github.com/ItsPyDevs/TimerApp" target="_blank">TimerApp</a></h3>
+            <p>Simple app to show time (C#)</p>
+        </div>
+        <div class="projet">
+            <h3><a href="https://github.com/ItsPyDevs/TicTacToe" target="_blank">TicTacToe</a></h3>
+            <p>TicTacToe system (python)</p>
+        </div>
+        <div class="projet">
+            <h3><a href="https://github.com/ItsPyDevs/ItsPyDevs" target="_blank">ItsPyDevs</a></h3>
+            <p>my github description (Readme.md)</p>
+        </div>
+        <div class="projet">
+            <h3><a href="https://github.com/ItsPyDevs/TTS-python-app" target="_blank">TTS-python-app</a></h3>
+            <p>Simple Tkinter app for TTS things (python)</p>
+        </div>
+        <div class="projet">
+            <h3><a href="https://github.com/ItsPyDevs/ChloeV2" target="_blank">ChloeV2</a></h3>
+            <p>simple Discord bot (python)</p>
+        </div>
+        <div class="projet">
+            <h3><a href="https://github.com/ItsPyDevs/Pycore" target="_blank">Pycoré</a></h3>
+            <p>Pycoré a simple python executor (python)</p>
+        </div>
+        <div class="projet">
+            <h3><a href="https://github.com/ItsPyDevs/GitLive" target="_blank">GitLive</a></h3>
+            <p>Get Repo Stats in Live (python)</p>
+        </div>
+        <div class="projet">
+            <h3><a href="https://github.com/ItsPyDevs/Simple-Discord-Log-Bot" target="_blank">Simple-Discord-Log-Bot</a></h3>
+            <p>A simple discord bot (Javascript)</p>
+        </div>
+        <div class="projet">
+            <h3><a href="https://github.com/ItsPyDevs/Simple-Python-WebHook-Nuker" target="_blank">Simple-Python-WebHook-Nuker</a></h3>
+            <p>Send Discord Message With WebHook ! (python)</p>
+        </div>
+    </div>
+    <div class="button-container">
+        <a href="../index.html">Retour</a>
+    </div>
+</body>
+</html>

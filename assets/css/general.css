@@ -8,3 +8,14 @@ body {
 	background-repeat: no-repeat;
 	background-attachment: fixed;
 }
+
+@media screen and (max-width: 600px) {
+	body {
+		background-image: url('./assets/img/2.png');
+	}
+}
+@media screen and (min-width: 600px) {
+	body {
+		background-image: url('./assets/img/1.png');
+	}
+}

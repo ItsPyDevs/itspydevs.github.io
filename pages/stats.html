@@ -1,1 +1,82 @@
+<h1>Stats GitHub</h1>
+<div id="github-stats-container">
+	<div class="stat-item">
+		<label>Nombre de dépôts :</label>
+		<span id="repo-count">...</span>
+	</div>
+	<div class="stat-item">
+		<label>Nombre d'étoiles :</label>
+		<span id="star-count">...</span>
+	</div>
+	<div class="stat-item">
+		<label>Nombre de followers :</label>
+		<span id="follower-count">...</span>
+	</div>
+</div>
+<img class="github-stats-image" src="https://github-readme-stats.vercel.app/api/top-langs/?username=ItsPyDevs&layout=donut" alt="Top Langs">
+<p>Contributions:</p>
+<img class="github-contributions-image" src="https://ghchart.rshah.org/ItsPyDevs" alt="GitHub Contributions">
+<div class="button-container">
+	<a radius="rounded-high" href="/index.html">Retour</a>
+</div>
 
+<script>
+async function fetchGitHubStats() {
+	try {
+		const response = await fetch('https://api.github.com/users/ItsPyDevs');
+		const data = await response.json();
+		
+		document.getElementById('repo-count').textContent = data.public_repos;
+		document.getElementById('star-count').textContent = data.public_gists; // Assuming this to be stars
+		document.getElementById('follower-count').textContent = data.followers;
+	} catch (error) {
+		console.error('Erreur lors de la récupération des statistiques GitHub:', error);
+	}
+}
+
+fetchGitHubStats();
+</script>
+
+<style>
+#github-stats-container {
+	justify-self: center;
+	padding: 20px;
+	animation: fadeInUp 0.6s ease;
+}
+
+#github-stats-container .stat-item {
+	margin-bottom: 10px;
+}
+
+#github-stats-container .stat-item label {
+	font-weight: 600;
+	margin-right: 10px;
+	color: rgba(255, 255, 255, 1);
+}
+
+#github-stats-container .stat-item span {
+	font-weight: 400;
+	color: rgba(255, 220, 220, 1);
+}
+
+#github-stats-container .github-stats-image, .github-contributions-image {
+	margin-top: 20px;
+	max-width: 100%;
+	height: auto;
+	box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
+	background-color: rgba(0, 0, 0, 0.75);
+	animation: fadeInUp 0.6s ease;
+}
+
+@media screen and (max-width: 600px) {
+	#github-stats-container {
+		padding: 15px;
+	}
+	.stat-item label, .stat-item span {
+		font-size: 0.875rem;
+	}
+	.github-stats-image, .github-contributions-image {
+		margin-top: 15px;
+	}
+}
+</style>

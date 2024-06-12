@@ -16,7 +16,7 @@
 		</div>
 		<script type="text/javascript">
 			function goto(page) {
-				$("#page-content").load("/pages/"+page+".php", function(responseTxt, statusTxt, jqXHR){
+				$("#page-content").load("/pages/"+page+".html", function(responseTxt, statusTxt, jqXHR){
 					if(statusTxt == "success"){
 						console.log("Page "+page+" loaded successfully");
 					}
@@ -25,6 +25,7 @@
 					}
 				});
 			}
-			</script>
+			goto("index");
+		</script>
 	</body>
 </html>

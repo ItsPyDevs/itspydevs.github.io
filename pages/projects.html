@@ -1,9 +1,9 @@
 <h1>Mes Projets Github</h1>
 <div id="projets-container"></div>
 <script>
-const username = 'ItsPyDevs'; // Remplacez par le nom d'utilisateur GitHub
-const container = document.getElementById("projets-container");
 function fetchGitHubStats() {
+	let username = 'ItsPyDevs'; // Remplacez par le nom d'utilisateur GitHub
+	let container = document.getElementById("projets-container");
 	try {
 		fetch(`https://api.github.com/users/${username}/repos`)
 		.then(response => {

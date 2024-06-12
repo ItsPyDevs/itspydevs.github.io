@@ -4,8 +4,5 @@ body {
 	line-height: 1.6;
 	margin: 0;
 	background-image: url('../img/bricks-background.png');
-	background-size: cover;
-	background-position: center;
-	background-repeat: no-repeat;
-	background-attachment: fixed;
+	background-repeat: repeat;
 }

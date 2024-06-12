@@ -13,27 +13,28 @@
     <link rel="stylesheet" href="/assets/css/animations.css">
     <style>
         #github-stats-container {
+            justify-self: center;
             border: 1px solid var(--border-color);
             border-radius: var(--border-radius);
             padding: 20px;
             animation: fadeInUp var(--transition-duration) ease;
         }
 
-        .stat-item {
+        #github-stats-container .stat-item {
             margin-bottom: 10px;
         }
 
-        .stat-item label {
+        #github-stats-container .stat-item label {
             font-weight: bold;
             margin-right: 10px;
             color: var(--secondary-text-color);
         }
 
-        .stat-item span {
+        #github-stats-container .stat-item span {
             color: var(--text-color);
         }
 
-        .github-stats-image, .github-contributions-image {
+        #github-stats-container .github-stats-image, .github-contributions-image {
             margin-top: 20px;
             max-width: 100%;
             height: auto;
@@ -42,13 +43,16 @@
             animation: fadeInUp var(--transition-duration) ease;
         }
 
-        @media (max-width: 600px) {
-            body { padding: 10px; }
-            h1 { font-size: 2rem; }
-            p { font-size: 1rem;  }
-            #github-stats-container { padding: 15px; }
-            .stat-item label, .stat-item span { font-size: 0.875rem; }
-            .github-stats-image, .github-contributions-image { margin-top: 15px; }
+        @media screen and (max-width: 600px) {
+            #github-stats-container {
+                padding: 15px;
+            }
+            .stat-item label, .stat-item span {
+                font-size: 0.875rem;
+            }
+            .github-stats-image, .github-contributions-image {
+                margin-top: 15px;
+            }
         }
 
     </style>

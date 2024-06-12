@@ -14,3 +14,28 @@ body {
 	box-sizing: border-box;
 	overflow-x: hidden;
 }
+
+/* TEXT ALIGN */
+*[align="center"] {
+	text-align: center;
+}
+*[align="left"] {
+	text-align: left;
+}
+*[align="right"] {
+	text-align: right;
+}
+
+/* BORDER RADIUS */
+*[radius="cubic"] {
+	border-radius: 0;
+}
+*[radius="rounded"] {
+	border-radius: 5px;
+}
+*[radius="rounded-high"] {
+	border-radius: 8px;
+}
+*[radius="circled"] {
+	border-radius: 50px;
+}

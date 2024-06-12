@@ -1,36 +1,30 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <link rel="icon" href="./assets/img/FAVICON.png" type="image/x-icon">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ItsPyDevs, Le site.</title>
-    <link rel="stylesheet" href="./assets/css/imports.css">
-    <link rel="stylesheet" href="./assets/css/general.css">
-    <link rel="stylesheet" href="./assets/css/animations.css">
-    <link rel="stylesheet" href="./assets/css/text.css">
-    <link rel="stylesheet" href="./assets/css/buttons.css">
-</head>
-<body >
-    <h1>ItsPyDevs, Le site.</h1>
-    <p>Ici, vous trouverez mes projets, mes compétences et bien plus encore.</p>
-    <div class="button-container">
-        <a radius="circled" href="/about.html">À Propos de ItsPyDevs</a>
-        <a radius="circled" href="/projects.html">Mes Projets Git</a>
-        <a radius="circled" href="/comments.html">Entrer en Contact</a>
-        <a radius="circled" href="/stats.html">Statistiques GitHub</a>
-    </div>
-    <script type="text/javascript">
-		function goto(page) {
-			$("#page-container").load("/pages/"+page+".php", function(responseTxt, statusTxt, jqXHR){
-				if(statusTxt == "success"){
-					console.log("Page "+page+" loaded successfully");
-				}
-				if(statusTxt == "error"){
-					console.log("Error: " + jqXHR.status + " " + jqXHR.statusText);
-				}
-			});
-		}
-		</script>
-</body>
+	<head>
+		<meta charset="UTF-8">
+		<link rel="icon" href="./assets/img/FAVICON.png" type="image/x-icon">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>ItsPyDevs, Le site.</title>
+		<link rel="stylesheet" href="./assets/css/imports.css">
+		<link rel="stylesheet" href="./assets/css/general.css">
+		<link rel="stylesheet" href="./assets/css/animations.css">
+		<link rel="stylesheet" href="./assets/css/text.css">
+		<link rel="stylesheet" href="./assets/css/buttons.css">
+	</head>
+	<body>
+		<div id="page-content">
+		</div>
+		<script type="text/javascript">
+			function goto(page) {
+				$("#page-content").load("/pages/"+page+".php", function(responseTxt, statusTxt, jqXHR){
+					if(statusTxt == "success"){
+						console.log("Page "+page+" loaded successfully");
+					}
+					if(statusTxt == "error"){
+						console.log("Error: " + jqXHR.status + " " + jqXHR.statusText);
+					}
+				});
+			}
+			</script>
+	</body>
 </html>

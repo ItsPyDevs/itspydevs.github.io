@@ -5,4 +5,12 @@ body {
 	margin: 0;
 	background-image: url('../img/bricks-background.png');
 	background-repeat: repeat;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	min-height: 100vh;
+	text-align: center;
+	box-sizing: border-box;
+	overflow-x: hidden;
 }

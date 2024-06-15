@@ -8,3 +8,5 @@ function goto(page) {
 		}
 	});
 }
+
+goto('index');

@@ -14,7 +14,9 @@ function fetchGitHubStats() {
 		})
 		.then(data => {
 			data.forEach(repo => {
-				container.innerHTML = container.innerHTML+`<div class="projet"><h3><a href="${repo.html_url}" target="_blank">${repo.name}</a></h3><p>${repo.description}</p></div>`;
+				if (repo.name != "itspydevs.github.io") {
+					container.innerHTML = container.innerHTML+`<div class="projet"><h3><a href="${repo.html_url}" target="_blank">${repo.name}</a></h3><p>${repo.description}</p></div>`;
+				}
 			});
 		})
 		.catch(error => {

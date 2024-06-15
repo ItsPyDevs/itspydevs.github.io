@@ -10,15 +10,11 @@
 			return String(Number(new Date));
 		}
 		const cssFiles = ['imports', 'general', 'animations', 'text', 'buttons'];
-		console.log('cc1');
 		cssFiles.forEach((file) => {
-			console.log('cc2');
 			let css = document.createElement("link");
 			css.setAttribute("rel", "stylesheet");
 			css.setAttribute("href", "./assets/css/"+file+".css?v="+time());
 			document.head.appendChild(css);
-			console.log('cc3');
-			console.log(css);
 		});
 		</script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>

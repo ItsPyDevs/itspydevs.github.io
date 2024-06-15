@@ -15,6 +15,7 @@ function fetchGitHubStats() {
 		.then(data => {
 			data.forEach(repo => {
 				if (repo.name != "itspydevs.github.io") {
+					console.log(`"${repo.name}"`);
 					container.innerHTML = container.innerHTML+`<div class="projet"><h3><a href="${repo.html_url}" target="_blank">${repo.name}</a></h3><p>${repo.description}</p></div>`;
 				}
 			});
@@ -29,7 +30,7 @@ function fetchGitHubStats() {
 fetchGitHubStats();
 </script>
 <div class="button-container">
-<a onclick="goto('index');">Retour</a>
+	<a radius="rounded-high" onclick="goto('index');">Retour</a>
 </div>
 
 <style>

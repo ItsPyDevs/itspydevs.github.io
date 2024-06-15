@@ -48,36 +48,36 @@ fetchGitHubStats();
 	border: 1px solid var(--border-color);
 	border-radius: var(--border-radius);
 	padding: 15px;
-	transition: box-shadow var(--transition-duration) ease, transform var(--transition-duration) ease, background-color var(--transition-duration) ease;
+	transition: box-shadow 0.6s ease, transform 0.6s ease, background-color 0.6s ease;
 }
 
 .projet:hover {
-	box-shadow: 0 0 15px 0 var(--box-shadow-color);
+	box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.6);
 	transform: scale(1.05) rotate(2deg);
 	background-color: #8b3a3a;
 }
 
 .projet h3 {
-	color: var(--text-color);
+	color: white;
 	font-size: 1.25rem;
 	margin-bottom: 5px;
-	transition: color var(--transition-duration) ease;
+	transition: color 0.6s ease;
 }
 
 .projet p {
-	color: var(--secondary-text-color);
+	color: rgba(255, 255, 255, 0.8);
 	font-size: 0.875rem;
 	margin-bottom: 10px;
 }
 
 .projet a {
-	color: var(--primary-color);
+	color: white;
 	text-decoration: none;
-	transition: color var(--transition-duration) ease, background-color var(--transition-duration) ease;
+	transition: color 0.6s ease, background-color 0.6s ease;
 }
 
 .projet a:hover {
-	color: var(--primary-color-hover);
+	color: #e08282;
 	background-color: rgba(255, 255, 255, 0.1);
 }
 </style>

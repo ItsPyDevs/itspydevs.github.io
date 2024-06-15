@@ -5,11 +5,18 @@
 		<link rel="icon" href="./assets/img/FAVICON.png" type="image/x-icon">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>ItsPyDevs, Le site.</title>
-		<link rel="stylesheet" href="./assets/css/imports.css">
-		<link rel="stylesheet" href="./assets/css/general.css">
-		<link rel="stylesheet" href="./assets/css/animations.css">
-		<link rel="stylesheet" href="./assets/css/text.css">
-		<link rel="stylesheet" href="./assets/css/buttons.css">
+		<script>
+		function time() {
+			return String(Number(new Date));
+		}
+		const cssFiles = ['imports', 'general', 'animations', 'text', 'buttons'];
+		cssFiles.forEach((file) => function() {
+			let css = document.createElement("link");
+			css.setAttribute("rel", "stylesheet");
+			css.setAttribute("href", "./assets/css/"+file+".css?v="+time());
+			document.head.appendChild(css);
+		});
+		</script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 	</head>
 	<body>

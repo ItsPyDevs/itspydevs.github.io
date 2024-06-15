@@ -34,7 +34,6 @@ fetchGitHubStats();
 </div>
 
 <style>
-
 #projets-container {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -80,30 +79,5 @@ fetchGitHubStats();
 .projet a:hover {
 	color: var(--primary-color-hover);
 	background-color: rgba(255, 255, 255, 0.1);
-}
-	
-.button-container a:hover {
-	background-color: var(--button-hover-color);
-	transform: translateY(-3px) scale(1.1);
-	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-
-@media (max-width: 600px) {
-	body {
-		padding: 10px;
-	}
-	
-	.projet h3 {
-		font-size: 1rem;
-	}
-	
-	.projet p {
-		font-size: 0.75rem;
-	}
-	
-	.button-container a {
-		padding: 8px 16px;
-		font-size: 0.875rem;
-	}
 }
 </style>

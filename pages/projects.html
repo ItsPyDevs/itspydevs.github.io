@@ -1,6 +1,7 @@
 <h1>Mes Projets Github</h1>
 <div id="projets-container"></div>
 <script>
+const lock = ['itspydevs.github.io', 'ItsPyDevs'];
 function fetchGitHubStats() {
 	let username = 'ItsPyDevs'; // Remplacez par le nom d'utilisateur GitHub
 	let container = document.getElementById("projets-container");
@@ -14,8 +15,7 @@ function fetchGitHubStats() {
 		})
 		.then(data => {
 			data.forEach(repo => {
-				if (repo.name != "itspydevs.github.io") {
-					console.log(`"${repo.name}"`);
+				if (!lock.includes(repo.name)) {
 					container.innerHTML = container.innerHTML+`<div class="projet"><h3><a href="${repo.html_url}" target="_blank">${repo.name}</a></h3><p>${repo.description}</p></div>`;
 				}
 			});

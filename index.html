@@ -18,21 +18,20 @@
 		});
 		</script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+		<script>
+		const jsFiles = ['goto'];
+		cssFiles.forEach((file) => {
+			let js = document.createElement("script");
+			js.setAttribute("type", "text/javascript");
+			js.setAttribute("src", "./assets/js/"+file+".js?v="+time());
+			document.head.appendChild(css);
+		});
+		</script>
 	</head>
 	<body>
 		<div id="page-content">
 		</div>
 		<script type="text/javascript">
-			function goto(page) {
-				$("#page-content").load("/pages/"+page+".html", function(responseTxt, statusTxt, jqXHR){
-					if(statusTxt == "success"){
-						console.log("Page "+page+" loaded successfully");
-					}
-					if(statusTxt == "error"){
-						console.log("Error: [" + jqXHR.status + "] " + jqXHR.statusText);
-					}
-				});
-			}
 			goto("index");
 		</script>
 	</body>

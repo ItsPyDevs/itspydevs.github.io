@@ -1,20 +1,4 @@
 <style>
-	#comment-form {
-		width: 100%;
-		max-width: 800px;
-		margin-top: 20px;
-		animation: fadeInUp 0.6s ease;
-		background: rgba(255, 255, 255, 0.1);
-		padding: 20px;
-		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-	}
-	
-	#comment-form label {
-		display: block;
-		margin-bottom: 5px;
-		color: var(--secondary-text-color);
-		font-weight: bold;
-	}
 	
 	#comment-form textarea {
 		width: 100%;
@@ -81,22 +65,17 @@
 			font-size: 0.875rem;
 		}
 	}
-	
-	#comment-form button {
-		padding: 8px 16px;
-		font-size: 0.875rem;
-	}
 </style>
 
 <h1>Envoyer un Commentaire</h1>
 <p>Partagez vos retours et commentaires avec nous en remplissant le formulaire ci-dessous.</p>
-<form id="comment-form">
+<form id="comment-form" class="form">
 	<label for="email">Email :</label>
-	<textarea required id="email" name="email" rows="1" placeholder="Votre adresse email"></textarea>
+	<input required radius="rounded" id="email" name="email" placeholder="Votre adresse email">
 	<label for="comment">Contenu :</label>
-	<textarea required id="comment" name="comment" rows="4" placeholder="Écrivez votre commentaire ici..."></textarea>
+	<textarea required radius="rounded" id="comment" name="comment" rows="4" placeholder="Écrivez votre commentaire ici..."></textarea>
 	<div class="error" id="error-message">Veuillez entrer une adresse email valide.</div>
-	<button type="submit">Envoyer</button>
+	<input type="submit" value="Envoyer !">
 </form>
 <div class="button-container">
 	<a radius="rounded-high" onclick="goto('index');">Retour</a>

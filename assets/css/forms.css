@@ -27,6 +27,11 @@ form.form div.form-input input, form.form div.form-input textarea {
 	resize: none;
 	font-family: 'Roboto', Arial;
 	padding: 8px;
+	font-size: 16px;
+}
+
+form.form div.form-input input:focus, form.form div.form-input textarea:focus {
+	box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
 form.form div.form-submit input {
@@ -42,6 +47,7 @@ form.form div.form-submit input[type="submit"] {
 	color: rgba(255, 255, 255, 1);
 	cursor: pointer;
 	align-self: center;
+	font-size: 16px;
 
 	transition: width 0.2s, color 0.2s, background 0.2s, border 0.2s;
 }

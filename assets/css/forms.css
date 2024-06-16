@@ -16,6 +16,7 @@ form.form div.form-input, form.form div.form-submit {
 	flex-direction: column;
 	margin-top: 10px;
 	text-align: center;
+	justify-content: center;
 }
 
 form.form div.form-input label {

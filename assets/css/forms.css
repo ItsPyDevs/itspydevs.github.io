@@ -28,10 +28,14 @@ form.form div.form-input input, form.form div.form-input textarea {
 	font-family: 'Roboto', Arial;
 	padding: 8px;
 	font-size: 16px;
+
+	transition: box-shadow 0.1s;
 }
 
 form.form div.form-input input:focus, form.form div.form-input textarea:focus {
 	box-shadow: 0 0 14px rgba(0, 0, 0, 1);
+
+	transition: box-shadow 0.1s;
 }
 
 form.form div.form-submit input {

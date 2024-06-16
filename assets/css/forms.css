@@ -23,9 +23,9 @@ form.form div.form-input label {
 }
 
 form.form div.form-input input {
-	
+	border: 1px solid rgba(0, 0, 0, 1);
 }
 
 form.form div.form-submit input {
-	
+	border: 1px solid rgba(255, 100, 100, 1);
 }

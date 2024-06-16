@@ -41,7 +41,7 @@ form.form div.form-submit input[type="submit"] {
 	width: 25%;
 	background-color: rgba(255, 100, 100, 0);
 	border: 2px solid rgba(255, 30, 30, 1);
-	color: rgba(0, 0, 0, 1);
+	color: rgba(255, 255, 255, 1);
 	cursor: pointer;
 
 	transition: width 0.2s, color 0.2s, background 0.2s, border 0.2s;
@@ -51,7 +51,7 @@ form.form div.form-submit input[type="submit"]:hover {
 	width: 50%;
 	background-color: rgba(255, 100, 100, 1);
 	border: 2px solid rgba(255, 30, 30, 0);
-	color: rgba(255, 255, 255, 1);
+	color: rgba(0, 0, 0, 1);
 
 	transition: width 0.2s, color 0.2s, background 0.2s, border 0.2s;
 }

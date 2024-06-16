@@ -25,7 +25,7 @@ form.form textarea, form.form input:not([type="submit"]) {
 }
 
 form.form textarea:focus, form.form input:not([type="submit"]):focus {
-	box-shadow: 0 0 10px 2px rgba(255, 113, 113, 1);
+	box-shadow: 0 0 10px 2px rgba(255, 113, 113, 0.5);
 	outline: none;
 }
 

@@ -26,10 +26,13 @@ form.form div.inputs input {
 	padding: 8px;
 }
 
-form.form div.form-input input {
+form.form div.form-input input, form.form div.form-input textarea {
 	border: 1px solid rgba(0, 0, 0, 1);
+	resize: none;
+	font-family: 'Roboto', Arial;
 }
 
 form.form div.form-submit input {
 	border: 1px solid rgba(255, 100, 100, 1);
+	font-family: 'Ubuntu', monospace;
 }

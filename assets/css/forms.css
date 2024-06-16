@@ -23,7 +23,6 @@ form.form div.form-input label {
 }
 
 form.form div.form-input input, form.form div.form-input textarea {
-	border: 1px solid rgba(0, 0, 0, 1);
 	resize: none;
 	font-family: 'Roboto', Arial;
 	padding: 8px;

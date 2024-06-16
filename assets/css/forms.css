@@ -1,0 +1,25 @@
+form.form {
+	width: 100%;
+	max-width: 800px;
+	margin-top: 20px;
+	animation: fadeInUp 0.6s ease;
+	background: rgba(255, 255, 255, 0.1);
+	padding: 20px;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+	display: flex;
+	flex-direction: column;
+}
+
+form.form label {
+	color: white;
+	font-weight: 800;
+	display: block;
+	margin-bottom: 5px;
+}
+
+form.form textarea, form.form label {
+	resize: none;
+	color: white;
+	padding: 5px;
+	
+}

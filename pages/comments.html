@@ -1,12 +1,17 @@
 <h1>Envoyer un Commentaire</h1>
 <p>Partagez vos retours et commentaires avec nous en remplissant le formulaire ci-dessous.</p>
 <form id="comment-form" class="form">
-	<label for="email">Email :</label>
-	<input required radius="rounded" id="email" name="email" placeholder="Votre adresse email">
-	<label for="comment">Contenu :</label>
-	<textarea required radius="rounded" id="comment" name="comment" rows="4" placeholder="Écrivez votre commentaire ici..."></textarea>
-	<div class="error" id="error-message">Veuillez entrer une adresse email valide.</div>
-	<input type="submit" value="Envoyer !">
+	<div class="form-input">
+		<label for="email">Email :</label>
+		<input required radius="rounded" id="email" name="email" placeholder="Votre adresse email">
+	</div>
+	<div class="form-input">
+		<label for="comment">Contenu :</label>
+		<textarea required radius="rounded" id="comment" name="comment" rows="4" placeholder="Écrivez votre commentaire ici..."></textarea>
+	</div>
+	<div class="form-input">
+		<input radius="circled" type="submit" value="Envoyer !">
+	</div>
 </form>
 <div class="button-container">
 	<a radius="rounded-high" onclick="goto('index');">Retour</a>

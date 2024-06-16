@@ -11,45 +11,20 @@ form.form {
 	flex-direction: column;
 }
 
-form.form label {
-	color: white;
-	font-weight: 800;
-	display: block;
-	margin-bottom: 5px;
+form.form div.form-input, form.form div.form-submit {
+	display: flex;
+	flex-direction: column;
 }
 
-form.form textarea, form.form input:not([type="submit"]) {
-	resize: none;
-	color: white;
-	padding: 5px;	
+form.form div.form-input label {
+	color: rgba(255, 255, 255, 1);
+	font-weight: 600;
 }
 
-form.form textarea:focus, form.form input:not([type="submit"]):focus {
-	box-shadow: 0 0 10px 2px rgba(255, 113, 113, 0.5);
-	outline: none;
+form.form div.form-input input {
+	
 }
 
-form.form input[type="submit"], form.form input[type="button"] {
-	border-radius: var(--border-radius);
-	background-color: var(--button-background-color);
-	color: #fff;
-	border: none;
-	padding: 12px 24px;
-	font-size: 18px;
-	cursor: pointer;
-	transition: background-color 0.3s ease, transform 0.3s ease;
-	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-	position: relative;
-	overflow: hidden;
-}
-form.form input[type="submit"]:hover, form.form input[type="button"]:hover {
-	background-color: var(--button-hover-color);
-	transform: translateY(-3px);
-}
-
-form.form .error {
-	color: red;
-	margin-top: -10px;
-	margin-bottom: 10px;
-	display: none;
+form.form div.form-submit input {
+	
 }

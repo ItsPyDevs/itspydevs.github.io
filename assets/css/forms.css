@@ -17,7 +17,7 @@ form.form label {
 	margin-bottom: 5px;
 }
 
-form.form textarea, form.form label {
+form.form textarea, form.form input {
 	resize: none;
 	color: white;
 	padding: 5px;

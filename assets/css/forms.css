@@ -31,7 +31,7 @@ form.form div.form-input input, form.form div.form-input textarea {
 }
 
 form.form div.form-input input:focus, form.form div.form-input textarea:focus {
-	box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.75);
 }
 
 form.form div.form-submit input {

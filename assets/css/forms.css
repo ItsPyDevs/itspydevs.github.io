@@ -15,6 +15,7 @@ form.form div.form-input, form.form div.form-submit {
 	display: flex;
 	flex-direction: column;
 	margin-top: 10px;
+	text-align: center;
 }
 
 form.form div.form-input label {
@@ -38,6 +39,7 @@ form.form div.form-submit input {
 form.form div.form-submit input[type="submit"] {
 	width: 25%;
 	background-color: rgba(255, 100, 100, 1);
+	cursor: pointer;
 
 	transition: width 0.1s;
 }

@@ -29,13 +29,6 @@ document.getElementById('comment-form').addEventListener('submit', function(even
 	const comment = document.getElementById('comment').value;
 	const email = document.getElementById('email').value;
 	
-	if (!isValidEmail(email)) {
-		document.getElementById('error-message').style.display = 'block';
-		return;
-	}
-
-	document.getElementById('error-message').style.display = 'none';
-	
 	const Send = process.env.WEBHOOK_COM
 	
 	const payload = {

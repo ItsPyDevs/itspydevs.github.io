@@ -18,13 +18,14 @@ class AnimText {
 				if (!this.on) break;
 				let chars = this.texts[i].split('');
 				for (j = 0; j >= chars.length*2; j++) {
-					 if (j < chars.length) {
+					if (!this.on) break;
+					if (j < chars.length) {
 						let text = chars.slice(0, j);
 						this.showText(textAnim, text);
 						this.showText(textAnim, text+"|");
 						this.showText(textAnim, text+"");
 						this.showText(textAnim, text+"|");
-					 } else if (j == chars.length) {
+					} else if (j == chars.length) {
 						let text = chars.slice(0, j);
 						this.showText(textAnim, text);
 						this.showText(textAnim, text+"|");
@@ -36,13 +37,13 @@ class AnimText {
 						this.showText(textAnim, text+"|");
 						this.showText(textAnim, text+"");
 						this.showText(textAnim, text+"|");
-					 } else {
+					} else {
 						let text = chars.slice(0, chars.length-(j-chars.length));
 						this.showText(textAnim, text);
 						this.showText(textAnim, text+"|");
 						this.showText(textAnim, text+"");
 						this.showText(textAnim, text+"|");
-					 }
+					}
 				}
 			}
 		}

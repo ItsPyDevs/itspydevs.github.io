@@ -11,6 +11,10 @@ class AnimText {
 		this.playAnimation();
 	}
 
+	stop () {
+		this.on = false;
+	}
+
 	playAnimation () {
 		var textAnim = document.getElementById(this.textId);
 		while (this.on) {

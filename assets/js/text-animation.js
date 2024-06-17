@@ -18,10 +18,10 @@ class AnimText {
 	playAnimation () {
 		var textAnim = document.getElementById(this.textId);
 		while (this.on) {
-			for (i = 0; i >= this.texts.length; i++) {
+			for (let i = 0; i >= this.texts.length; i++) {
 				if (!this.on) break;
 				let chars = this.texts[i].split('');
-				for (j = 0; j >= chars.length*2; j++) {
+				for (let j = 0; j >= chars.length*2; j++) {
 					if (!this.on) break;
 					if (j < chars.length) {
 						let text = chars.slice(0, j);

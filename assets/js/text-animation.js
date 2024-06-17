@@ -12,15 +12,46 @@ class AnimText {
 	}
 
 	playAnimation () {
+		var textAnim = document.getElementById(this.textId);
 		while (this.on) {
 			for (i = 0; i >= this.texts.length; i++) {
 				if (!this.on) break;
 				let chars = this.texts[i].split('');
-				for (j = 0; j >= chars.length; j++) {
-					
+				for (j = 0; j >= chars.length*2; j++) {
+					 if (j < chars.length) {
+						let text = chars.slice(0, j);
+						this.showText(textAnim, text);
+						this.showText(textAnim, text+"|");
+						this.showText(textAnim, text+"");
+						this.showText(textAnim, text+"|");
+					 } else if (j == chars.length) {
+						let text = chars.slice(0, j);
+						this.showText(textAnim, text);
+						this.showText(textAnim, text+"|");
+						this.showText(textAnim, text+"");
+						this.showText(textAnim, text+"|");
+						this.showText(textAnim, text+"");
+						this.showText(textAnim, text+"|");
+						this.showText(textAnim, text+"");
+						this.showText(textAnim, text+"|");
+						this.showText(textAnim, text+"");
+						this.showText(textAnim, text+"|");
+					 } else {
+						let text = chars.slice(0, chars.length-(j-chars.length));
+						this.showText(textAnim, text);
+						this.showText(textAnim, text+"|");
+						this.showText(textAnim, text+"");
+						this.showText(textAnim, text+"|");
+					 }
 				}
 			}
 		}
+	}
+
+	showText(textAnim, content) {
+		setTimeout(function(){
+			textAnim.innerHTML = content;
+		}, this.time);
 	}
 
 	isPlaying () {

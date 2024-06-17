@@ -6,16 +6,16 @@ class AnimText {
 		this.on = false;
 	}
 
-	start () {
+	async start () {
 		this.on = true;
-		this.playAnimation();
+		await this.playAnimation();
 	}
 
-	stop () {
+	async stop () {
 		this.on = false;
 	}
 
-	playAnimation () {
+	async playAnimation () {
 		var textAnim = document.getElementById(this.textId);
 		while (this.on) {
 			for (let i = 0; i >= this.texts.length; i++) {

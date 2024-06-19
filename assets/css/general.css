@@ -13,7 +13,6 @@ body {
 	text-align: center;
 	box-sizing: border-box;
 	overflow-x: hidden;
-	padding: 10px;
 }
 
 #page-content {
@@ -26,6 +25,7 @@ body {
 	text-align: center;
 	box-sizing: border-box;
 	overflow-x: hidden;
+	padding: 10px;
 }
 
 /* TEXT ALIGN */

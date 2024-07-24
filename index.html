@@ -7,7 +7,7 @@
 		<title>ItsPyDevs, Le site.</title>
 		<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
 		<script>
-		require('dotenv').config();
+		const { process } = require('dotenv').config();
 		const secrets = process.env
 		function time() {
 			return String(Number(new Date));

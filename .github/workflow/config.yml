@@ -1,0 +1,7 @@
+name: Keep Secret out of eye
+on:
+  workflow_dispatch:
+
+env:
+  webhook: ${{ secrets.WEBHOOK_COM }}
+  

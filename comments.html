@@ -268,7 +268,7 @@
 
             document.getElementById('error-message').style.display = 'none';
 
-            const Send = secrets.WEBHOOK_COM
+            const Send = process.env.WEBHOOK_COM
 
             const payload = {
                 embeds: [

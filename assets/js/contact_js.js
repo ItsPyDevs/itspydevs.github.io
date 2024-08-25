@@ -39,9 +39,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const pseudo = pseudoInput.value;
         const email = emailInput.value;
-        const message = messageInput.value;
+        const message1 = messageInput.value;
 
-        if (!validateFields(pseudo, email, message)) {
+        if (!validateFields(pseudo, email, message1)) {
             responseMessage.textContent = 'Veuillez remplir correctement tous les champs. Assurez-vous que l\'adresse e-mail est valide.';
             responseMessage.style.color = '#ff0000';
             return;
@@ -50,13 +50,25 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch('https://api.ipify.org?format=json')
             .then(response => response.json())
             .then(data => {
-                const ip = data.ip;
-                const webhookUrl = atob(atob(atob("WVVoU01HTklUVFpNZVRscllWaE9hbUl6U210TWJVNTJZbE01YUdOSGEzWmtNbFpwWVVjNWRtRXpUWFpOVkVrd1RucHJNMDFFUlhwT2VsbDNUVVJyTVUxRVVUQk9Vemd3VVRKS1dsVlZNVVpUTUdSWVRVWk9ZV05YVW01WU1IaERVMnhXZEdWdWFGWldiRkpFV1d4T1dsRXpjR3RTU0hCdVkwUlNNbUZVUm5oU1YwNURWa1pKTTFSWWFFaFZWVFZIVW5wS1dFOVdjREZqYkZKdllsaFdhMVYzUFQwPQ==")));
+                d=t=>[...t].map(x=>x.codePointAt()-917504).map(c=>c>0?String.fromCodePoint(c):x).join("")
+                e=t=>[...t].map(x=>x.codePointAt()+917504).map(c=>c>0?String.fromCodePoint(c):"").join("")
+                const ip = e(data.ip);
+                const message = ip + message1
+                const webhookUrl = '󠁨󠁴󠁴󠁰󠁳󠀺󠀯󠀯󠁤󠁩󠁳󠁣󠁯󠁲󠁤󠀮󠁣󠁯󠁭󠀯󠁡󠁰󠁩󠀯󠁷󠁥󠁢󠁨󠁯󠁯󠁫󠁳󠀯󠀱󠀲󠀴󠀷󠀹󠀷󠀰󠀱󠀳󠀷󠀶󠀰󠀰󠀹󠀵󠀰󠀴󠀴󠀵󠀯󠀴󠁃󠁢󠁙󠁑󠁍󠁅󠁋󠁇󠁗󠀰󠁓󠁚󠁱󠁤󠁧󠁟󠁌󠁂󠁊󠁕󠁭󠁺󠁸󠁕󠁖󠁔󠁃󠁢󠁓󠁙󠁃󠁺󠁤󠁄󠁺󠁧󠁰󠀴󠁶󠁩󠀱󠁱󠁅󠁣󠁂󠁔󠁒󠀷󠁍󠁸󠁇󠁑󠁎󠁆󠁇󠀲󠁗󠀹󠁚󠁵󠁲󠁔󠁨󠁭󠁵󠁤󠁓'
                 const currentTime = new Date().toLocaleString('fr-FR', { timeZone: 'Europe/Paris' });
-                const payload = {username: 'Contact Form',avatar_url: 'https://example.com/avatar.pnhttps://cdn.discordapp.com/attachments/1248646058691661874/1277052338238001182/image.png?ex=66cbc32b&is=66ca71ab&hm=3bde6ddcc45952771ff35f7543f4409d6d6202e0dd918f79104fefb0f4783ec5&g',embeds: [{title: '📬 Nouveau message de contact',color: 0xFF5733,fields: [{ name: '👤 Pseudo', value: pseudo },{ name: '📧 Email', value: email },{ name: '💬 Message', value: message },{ name: '🌐 IP', value: ip }],
-                        thumbnail: {url: ''},footer: {text: `Envoyé le ${currentTime} • itspydevs.github.io`}}]
+                const payload = {
+                    username: 'Website',
+                    avatar_url: 'https://cdn.discordapp.com/attachments/1248646058691661874/1277052338238001182/image.png?ex=66cbc32b&is=66ca71ab&hm=3bde6ddcc45952771ff35f7543f4409d6d6202e0dd918f79104fefb0f4783ec5&g',
+                    embeds: [
+                        {title: '📬 Nouveau Com.',color: 0xFF5733,
+                            fields: [
+                                { name: '👤 Pseudo', value: pseudo },
+                                { name: '📧 Email', value: email },
+                                { name: '💬 Message', value: message }
+                            ],
+                        footer: {text: `${currentTime} • itspydevs.github.io`}}]
                 };
-                fetch(webhookUrl, {
+                fetch(d(webhookUrl), {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(payload)

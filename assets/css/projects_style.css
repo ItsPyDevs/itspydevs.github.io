@@ -1,0 +1,162 @@
+body {
+    background-color: #1a0000;
+    color: #ff9999;
+    font-family: 'Cinzel', serif;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+.header {
+    text-align: center;
+    padding: 15px;
+    background-color: #2a0000;
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.9);
+}
+
+@keyframes float {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-8px); }
+}
+
+
+h1 {
+    margin: 0;
+    font-size: 2.5rem;
+    color: #ff3333;
+    text-shadow: 2px 2px 4px #800000;
+    animation: pulseText 2s infinite alternate;
+}
+
+@keyframes pulseText {
+    from { text-shadow: 2px 2px 4px #800000; }
+    to { text-shadow: 2px 2px 8px #ff0000; }
+}
+
+.projects-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 15px;
+}
+
+.project-card {
+    background-color: rgba(26, 0, 0, 0.8);
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.9);
+    margin: 10px;
+    padding: 15px;
+    width: 200px;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 2px solid #800000;
+}
+
+.project-card:hover {
+    transform: scale(1.05) rotate(3deg);
+    box-shadow: 0 0 30px rgba(255, 0, 0, 1);
+}
+
+.project-card img {
+    width: 100%;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #ff3333;
+}
+
+.project-card h3 {
+    margin: 8px 0;
+    font-size: 1.2rem;
+    color: #ff6666;
+    text-shadow: 1px 1px 3px #800000;
+}
+
+.project-card p {
+    font-size: 0.9rem;
+    color: #ff9999;
+}
+
+.footer a {
+    position: fixed;
+    bottom: 8px;
+    right: 8px;
+    font-size: 10px;
+    color: #ff3333;
+}
+
+
+.buttonretour {
+    display: block;
+    margin: 25px auto 0;
+    padding: 10px 18px;
+    font-size: 14px;
+    background-color: #800000;
+    color: #ff9999;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    position: relative;
+    overflow: hidden;
+    animation: flammes 3s ease-in-out infinite;
+    text-decoration: none;
+    width: fit-content;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+@keyframes flammes {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-8px) rotate(-5deg); }
+}
+
+.buttonretour::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 0, 0, 0.3) 0%, transparent 70%);
+    transform: scale(0);
+    transition: transform 0.5s ease-out;
+    animation: rotation 8s linear infinite;
+}
+
+@keyframes rotation {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.buttonretour:hover::before {
+    transform: scale(1);
+}
+
+.buttonretour:hover {
+    background-color: #ff3333;
+    color: #ffffff;
+    box-shadow: 0 0 25px rgba(255, 0, 0, 0.9);
+    transform: scale(1.1) rotate(5deg);
+}
+
+.buttonretour:active {
+    transform: scale(0.95) rotate(-5deg);
+}
+
+.buttonretour::after {
+    content: '🔥';
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.buttonretour:hover::after {
+    opacity: 1;
+    animation: flammes 0.5s infinite;
+}

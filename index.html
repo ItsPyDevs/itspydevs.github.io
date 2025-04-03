@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio - ItsPyDevs</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&family=Raleway:wght@300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<!--
+__¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶___¶¶¶___§§§§§______§§§§§___¶¶¶__
+__¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶___¶¶¶¶¶§§§§§§§§__§§§§§§§§¶¶¶¶¶__
+________¶¶¶___________¶¶¶¶¶¶§§§§§§§§§§§§¶¶¶¶¶¶____
+________¶¶¶___________§§§§¶¶¶¶¶¶§§§§§¶¶¶¶¶¶§§§____
+________¶¶¶___________§§§§§§¶¶¶¶¶¶¶¶¶¶¶¶¶§§§§§____
+________¶¶¶___________§§§§§§§§¶¶¶¶¶¶¶¶§§§§§§§§____
+________¶¶¶____________§§§§§§¶¶¶¶¶¶¶¶¶¶§§§§§§_____
+________¶¶¶_____________§§§§¶¶¶¶¶§§§¶¶¶¶¶§§§______
+________¶¶¶______________§¶¶¶¶¶§§§§§§¶¶¶¶¶§_______
+________¶¶¶_____________¶¶¶¶¶¶§§§§§§§§§¶¶¶¶¶¶_____
+________¶¶¶___________¶¶¶¶¶__§§§§§§§§§§___¶¶¶¶¶___
+__¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶___¶¶¶¶¶______§§§§§§_______¶¶¶¶__
+__¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶___¶¶___________§§___________¶¶__
+__________________________________________________
+__¶¶¶¶¶¶__¶¶¶¶¶¶¶¶___¶¶¶¶¶¶¶¶¶__¶¶¶¶¶¶¶¶_¶¶¶¶¶¶¶¶_
+___¶¶¶¶¶___¶¶¶¶¶¶__¶¶¶¶¶¶_¶¶¶¶¶__¶¶¶¶¶¶¶__¶¶¶¶¶¶¶_
+_____¶¶¶____¶¶¶___¶¶¶¶_______¶¶¶__¶¶¶_______¶¶¶___
+______¶¶¶__¶¶¶____¶¶¶_________¶¶¶_¶¶¶_______¶¶¶___
+_______¶¶¶¶¶¶____¶¶¶__________¶¶¶_¶¶¶_______¶¶¶___
+________¶¶¶¶_____¶¶¶__________¶¶¶_¶¶¶_______¶¶¶___
+________¶¶¶______¶¶¶¶_________¶¶¶_¶¶¶_______¶¶¶___
+________¶¶¶_______¶¶¶________¶¶¶¶_¶¶¶_______¶¶¶___
+________¶¶¶________¶¶¶¶____¶¶¶¶¶___¶¶¶_____¶¶¶____
+____¶¶¶¶¶¶¶¶¶¶¶_____¶¶¶¶¶¶¶¶¶¶______¶¶¶¶¶¶¶¶¶_____
+_____¶¶¶¶¶¶¶¶¶________¶¶¶¶¶¶__________¶¶¶¶¶_______
+
+-->
+<body>
+    <div class="cursor-circle"></div>
+    <nav class="navbar">
+        <ul>
+            <li><a href="#about">A Propos</a></li>
+            <li><a href="#skills">Skills</a></li>
+            <li><a href="#stats">Statistiques</a></li>
+            <li><a href="#projects">Projets</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+    <div class="theme-toggle">
+        <button id="theme-btn"><i class="fas fa-moon"></i></button>
+    </div>
+    <section id="home" class="hero">
+        <div data-aos="fade-up">
+            <h1>Hey, I'm <span class="highlight animated-text">ItsPyDevs</span></h1>
+            <p class="description">Un dévoloppeur passionné depuis toujours</p>
+            <a href="#contact" class="talk-btn">Contact</a>
+        </div>
+    </section>
+    <section id="about" class="section">
+        <h2 data-aos="fade-up"><span class="section-tag">def about_me(developer: str) -> str:</span></h2>
+        <div class="section-content">
+            <div class="text-content" data-aos="fade-left">
+                <p>Je suis un étudiant passionné par la programmation et la création de solutions innovantes à travers le code. J'aime l'informatique globalement depuis toujours, j'aimer coder, intéragir avec des outils numériques. Je code principalement en python, mais je code aussi en c#, Java, javascript, html, css. </p>
+            </div>
+            <div class="image-content" data-aos="fade-right">
+                <div class="image-wrapper">
+                    <img src="https://cdn.discordapp.com/avatars/1211004235857137688/4183ba72f29f261d7c7485252826feea.png?size=4096&ignore=true" alt="ItsPyDevs" onerror="this.src='https://via.placeholder.com/300x300?text=Image+non+trouvée';">
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="skills" class="section">
+        <h2 data-aos="fade-up"><span class="section-tag">def skills(developer: str) -> list:</span></h2>
+        <div class="skills-container">
+            <div class="skill-card" data-aos="zoom-in">
+                <img src="https://skillicons.dev/icons?i=py" alt="Python">
+                <h3>Python</h3>
+                <p>J'utilise python pour tout ce qui est bot discord, petite application, calculs banal, parfois pour des requête api, c'est le langage que je connais le mieux.</p>
+            </div>
+            <div class="skill-card" data-aos="zoom-in">
+                <img src="https://skillicons.dev/icons?i=cs" alt="C#">
+                <h3>C#</h3>
+                <p>J'apprend le C# (aussi appellé csharp) pour pouvoir arrêter de faire des applications python mal optimisée et pouvoir les transformer en .exe sans trop d'effort.</p>
+            </div>
+            <div class="skill-card" data-aos="zoom-in">
+                <img src="https://skillicons.dev/icons?i=js" alt="JavaScript">
+                <h3>JavaScript</h3>
+                <p>J'utilise JavaScript pour faire des sites web performant et bien construit, parfois des bots discord avec discord.js mais je suis pas vraiment expérimenté dans ce domaine.</p>
+            </div>
+            <div class="skill-card" data-aos="zoom-in">
+                <img src="https://skillicons.dev/icons?i=discord" alt="Discord">
+                <h3>Discord</h3>
+                <p>J'utilise discord pour communiquer et entrer en contact avec des developpeurs pour pouvoir enrichir mais compétence. j'utilise aussi discord pour tester mes bots (d.js ou d.py).</p>
+            </div>
+            <div class="skill-card" data-aos="zoom-in">
+                <img src="https://skillicons.dev/icons?i=eclipse" alt="Eclipse">
+                <h3>Eclipse</h3>
+                <p>J'utilise Eclipse pour pouvoir faire des plugins minecraft avec Java Facilement, je suis en cours d'apprentissage mais peut être que bientot il y aura un repo qui pop pour presenter un plugin.</p>
+            </div>
+            <div class="skill-card" data-aos="zoom-in">
+                <img src="https://skillicons.dev/icons?i=git" alt="Git">
+                <h3>Git</h3>
+                <p>J'utilise git pour controller mes projets efficacement, la commande git est une des commandes que j'utilise le plus après les commandes type comme python ou node.</p>
+            </div>
+            <div class="skill-card" data-aos="zoom-in">
+                <img src="https://skillicons.dev/icons?i=github" alt="GitHub">
+                <h3>GitHub</h3>
+                <p>J'utilise github pour pouvoir partager facilement mes créations entre développeurs.</p>
+            </div>
+            <div class="skill-card" data-aos="zoom-in">
+                <img src="https://skillicons.dev/icons?i=java" alt="Java">
+                <h3>Java</h3>
+                <p>J'utilise Java principalement sur des projet tel que les plugin minecraft, paper, bukkit, spiggot.</p>
+            </div>
+            <div class="skill-card" data-aos="zoom-in">
+                <img src="https://skillicons.dev/icons?i=regex" alt="Regex">
+                <h3>Regex</h3>
+                <p>J'utilise beacoup regex dans mes projet, que se soit des projet web ou python en passant par javascript.</p>
+            </div>
+            <div class="skill-card" data-aos="zoom-in">
+                <img src="https://skillicons.dev/icons?i=stackoverflow" alt="Stack Overflow">
+                <h3>Stack Overflow</h3>
+                <p>J'utilise stackoverflow pour pouvoir résoudre des problèmes que je rencontre dans mes projets, pouvoir communiquer et résoudre les erreurs que j'aurais pû commetre au cours du developement.</p>
+            </div>
+            <div class="skill-card" data-aos="zoom-in">
+                <img src="https://skillicons.dev/icons?i=vscode" alt="VS Code">
+                <h3>VS Code</h3>
+                <p>VScode, mon éditeur de code préféré, j'utilise vscode pour presque TOUT mes projets, il est très pratique et flexible.</p>
+            </div>
+            <div class="skill-card" data-aos="zoom-in">
+                <img src="https://skillicons.dev/icons?i=visualstudio" alt="Visual Studio">
+                <h3>Visual Studio</h3>
+                <p>J'utilise Visual Studio pour pouvoir faire des application windows, ou Windows Form.</p>
+            </div>
+            <div class="skill-card" data-aos="zoom-in">
+                <img src="https://skillicons.dev/icons?i=html" alt="HTML">
+                <h3>HTML</h3>
+                <p>J'utlise Html pour crée des projet web, il est très pratique, et facile à utiliser/apprendre.</p>
+            </div>
+            <div class="skill-card" data-aos="zoom-in">
+                <img src="https://skillicons.dev/icons?i=css" alt="CSS">
+                <h3>CSS</h3>
+                <p>J'utilise CSS pour pouvoir faire de mes projet web des projets plus éstétiques, c'est simple d'utilisation et pratique.</p>
+            </div>
+            <div class="skill-card" data-aos="zoom-in">
+                <img src="https://skillicons.dev/icons?i=sqlite" alt="SQLite">
+                <h3>SQLite</h3>
+                <p>J'utilise SQLite pour pouvoir faire des bases de données, pour mes bots discord, ou pour mes projet web.</p>
+            </div>
+        </div>
+    </section>
+    <section id="stats" class="section">
+        <h2 data-aos="fade-up"><span class="section-tag">def stats(developer: str) -> dict:</span></h2>
+        <div class="stats-container">
+            <div class="stats-card" data-aos="fade-up">
+                <img id="github-langs" src="https://github-readme-stats.vercel.app/api/top-langs/?username=itspydevs&layout=pie&theme=dark" alt="Top Languages">
+            </div>
+            <div class="stats-card" data-aos="fade-up">
+                <img id="github-stats" src="https://github-readme-stats.vercel.app/api?username=itspydevs&show_icons=true&theme=dark" alt="GitHub Stats">
+            </div>
+            
+        </div>
+    </section>
+    <section id="projects" class="section">
+        <h2 data-aos="fade-up"><span class="section-tag">def projects(developer: str) -> list:</span></h2>
+        <div class="projects-container" id="project-list"></div>
+    </section>
+    <section id="contact" class="section">
+        <h2 data-aos="fade-up"><span class="section-tag">def contact_me(developer: str) -> str:</span></h2>
+        <div class="section-content">
+            <div class="text-content" data-aos="fade-left">
+                <p>N'hésite pas à me contacter via les moyens suivants :</p>
+                <div class="contact-info">
+                    <p>Email: <a href="mailto:midrouet.antoine12@gmail.com">midrouet.antoine12@gmail.com</a></p>
+                    <p>Discord: <a href="https://discord.com/users/1211004235857137688" target="_blank">ItsPyDevs</a></p>
+                    <ul class="social-links">
+                        <li><a href="https://discord.com/users/1211004235857137688" target="_blank"><i class="fab fa-discord"></i></a></li>
+                        <li><a href="mailto:midrouet.antoine12@gmail.com"><i class="fas fa-envelope"></i></a></li>
+                        <li><a href="https://github.com/ItsPyDevs" target="_blank"><i class="fab fa-github"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer>
+        <p>© 2025 ItsPyDevs. Tout droits réservé.</p>
+    </footer>
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script> AOS.init(); </script>
+    <script src="script.js"></script>
+</body>
+</html>

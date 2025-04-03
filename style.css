@@ -384,7 +384,7 @@ body.light-mode .talk-btn {
 }
 
 .talk-btn:hover {
-    transition: background 0.5s ease, transform 0.3s ease;
+    transform: background 0.5s ease, transform 0.3s ease;
     animation: pulse 0.5s infinite;
 }
 
@@ -413,6 +413,17 @@ body.light-mode .animated-text:hover span {
     100% { transform: translateY(0); }
 }
 
+@keyframes slideIn {
+    0% {
+        transform: translateX(-50px) rotate(-5deg);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0) rotate(0deg);
+        opacity: 1;
+    }
+}
+
 .skills-container {
     display: flex;
     flex-wrap: wrap;
@@ -428,7 +439,7 @@ body.light-mode .animated-text:hover span {
     border-radius: 15px;
     padding: 20px;
     text-align: center;
-    width: 300px; /* Ajusté pour accueillir le texte */
+    width: 300px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -522,6 +533,14 @@ body.light-mode .skill-card p {
 .project-card img {
     max-width: 100%;
     border-radius: 10px;
+    animation: slideIn 0.8s ease forwards;
+    transition: transform 0.3s ease, filter 0.3s ease, box-shadow 0.3s ease;
+}
+
+.project-card img:hover {
+    transform: scale(1.1);
+    filter: brightness(1.2);
+    box-shadow: 0 10px 20px rgba(255, 68, 68, 0.3);
 }
 
 .project-card:hover {

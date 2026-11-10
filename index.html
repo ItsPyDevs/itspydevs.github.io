@@ -1,432 +1,171 @@
 <!doctype html>
-<html lang="fr" data-theme="dark">
+<html lang="fr">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ItsPyDevs, développeur passionné</title>
-  <meta name="description" content="Antoine, alias ItsPyDevs. Développeur passionné : bots Discord, outils, applications et plugins Minecraft, en Python, Java et C#.">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>ItsPyDevs, développeur Python</title>
+  <meta name="description" content="Portfolio 3D d'Antoine (ItsPyDevs), développeur : bots Discord, outils, applications et plugins Minecraft.">
   <meta name="theme-color" content="#1a1b26">
-  <meta name="color-scheme" content="dark light">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="ItsPyDevs, développeur Python et Rust">
-  <meta property="og:description" content="Coder, c'est transformer les problèmes en solutions codées. Bots, outils, applications.">
+  <meta property="og:title" content="ItsPyDevs, développeur Python">
+  <meta property="og:description" content="Un portfolio à parcourir en 3D. Bots, outils, applications.">
   <meta property="og:url" content="https://itspydevs.github.io/">
   <meta property="og:image" content="https://github.com/ItsPyDevs.png">
-  <meta name="twitter:card" content="summary">
+  <script>(function(){var d=document.documentElement;if(!matchMedia("(prefers-reduced-motion: reduce)").matches){d.classList.add("js");setTimeout(function(){if(!d.classList.contains("fly"))d.classList.remove("js")},3000)}})()</script>
+  <link rel="canonical" href="https://itspydevs.github.io/">
   <link rel="icon" href="FAVICON.ico">
-  <script>
-    try {
-      var t = localStorage.getItem("theme");
-      if (t !== "light" && t !== "dark") t = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
-      document.documentElement.dataset.theme = t;
-    } catch (e) { document.documentElement.dataset.theme = "dark"; }
-  </script>
-  <script>
-    if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      document.documentElement.classList.add("anim");
-      setTimeout(function () {
-        if (!document.documentElement.classList.contains("ready")) document.documentElement.classList.remove("anim");
-      }, 3500);
-    }
-  </script>
-  <script>try{if(!sessionStorage.getItem("booted")&&!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("booting")}catch(e){}</script>
-  <noscript><style>html.anim .reveal { opacity: 1 !important; transform: none !important; }</style></noscript>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=JetBrains+Mono:wght@400;500&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;500;700&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"ItsPyDevs","url":"https://itspydevs.github.io/","jobTitle":"Développeur","sameAs":["https://github.com/ItsPyDevs"]}</script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
   <script src="script.js" defer></script>
 </head>
 <body>
-  <div id="boot" aria-hidden="true"><div class="boot-in"><p class="boot-log" id="boot-log"></p><p class="boot-name">ITSPYDEVS</p><div class="boot-bar"><i id="boot-fill"></i></div><p class="boot-pct" id="boot-pct">000</p><p class="boot-skip">clic pour passer</p></div></div>
-  <a class="skip" href="#contenu">Aller au contenu</a>
-  <div class="progress" id="progress" aria-hidden="true"></div>
+  <a class="skip" href="#hero" data-go="0">Aller au contenu</a>
 
-  <nav class="rail" aria-label="Sections de la page">
-    <div class="rail-line"><div class="rail-fill" id="rail-fill"></div></div>
-    <ol id="rail-list"></ol>
-  </nav>
-
-  <header class="site-header">
-    <nav class="wrap nav" aria-label="Navigation principale">
-      <a class="brand" href="#top">ItsPyDevs</a>
-      <div class="nav-actions">
-        <button type="button" class="icon-btn" id="palette-open" aria-haspopup="dialog">
-          Commandes <kbd>Ctrl K</kbd>
-        </button>
-        <button type="button" class="icon-btn" id="theme-toggle" aria-label="Changer de thème" aria-pressed="false">
-          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></svg>
-        </button>
-      </div>
-      <ul class="nav-links">
-        <li><a href="#apropos">À propos</a></li>
-        <li><a href="#domaines">Domaines</a></li>
-        <li><a href="#competences">Compétences</a></li>
-        <li><a href="#atelier">Atelier</a></li>
-        <li><a href="#projets">Projets</a></li>
-        <li id="nav-activite" hidden><a href="#activite">Activité</a></li>
-        <li><a href="#faq">FAQ</a></li>
-        <li><a href="#contact">Contact</a></li>
+  <header class="bar">
+    <a class="brand" href="#hero" data-go="0">ItsPyDevs</a>
+    <nav aria-label="Sections">
+      <ul id="menu">
+        <li><a href="#apropos" data-go="1">À propos</a></li>
+        <li><a href="#domaines" data-go="2">Domaines</a></li>
+        <li><a href="#competences" data-go="3">Compétences</a></li>
+        <li><a href="#atelier" data-go="4">Atelier</a></li>
+        <li><a href="#projets" data-go="5">Projets</a></li>
+        <li><a href="#faq" data-go="6">FAQ</a></li>
+        <li><a href="#contact" data-go="7">Contact</a></li>
       </ul>
     </nav>
   </header>
 
-  <main id="contenu">
-    <section class="hero" id="top">
-      <canvas id="field" aria-hidden="true"></canvas>
-      <div class="wrap hero-grid">
-        <div class="hero-copy">
-          <p class="status-chip">🚀 Focusing</p>
-          <p class="kicker" id="typed" data-lines='["Développeur passionné","Amoureux du code propre","Toujours en quête d\u2019innovation","Bienvenue sur mon GitHub 🚀"]'><span class="t">Développeur passionné</span><span class="caret"></span></p>
+  <div id="world">
+    <canvas id="gl" aria-hidden="true"></canvas>
+    <div id="scene">
+
+      <section class="panel" id="hero" data-side="0" data-title="Accueil">
+        <div class="card hero">
+          <p class="eyebrow lift">Développeur · Python, Java, C#</p>
           <h1>ItsPyDevs</h1>
-          <p class="lead">Hiiiiiii 👋 Moi c'est Antoine. J'aime construire des outils utiles, clairs et puissants : bots Discord, applications, IA et plugins Minecraft. Du code propre, bien structuré, et des interfaces sombres.</p>
-          <div class="cta-row">
-            <a class="btn btn-primary" href="#projets">Voir les projets</a>
-            <a class="btn btn-ghost" href="#contact">Travailler ensemble</a>
+          <p class="lead lift">Antoine, développeur. Je conçois des outils utiles, clairs et puissants : bots Discord, applications, IA et plugins Minecraft. Un code propre, structuré et efficace.</p>
+          <div class="row lift">
+            <a class="btn primary" href="#apropos" data-go="1">Entrer dans la page</a>
+            <a class="btn" href="#contact" data-go="7">Me contacter</a>
           </div>
-          <p class="pulse" id="pulse" hidden></p>
+          <p class="hint lift"><span class="live" aria-hidden="true"></span>En développement actif · Défile, glisse ou utilise les flèches</p>
         </div>
+      </section>
 
-        <div class="repl" id="repl" role="region" aria-label="Terminal interactif">
-          <div class="repl-bar">
-            <span>itspydevs ~ terminal</span>
-            <span class="repl-hint">essaie « help »</span>
-          </div>
-          <div class="repl-out" id="repl-out" role="log" aria-live="polite"></div>
-          <form class="repl-form" id="repl-form" autocomplete="off">
-            <label for="repl-in" class="repl-prompt">$</label>
-            <input id="repl-in" type="text" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-label="Commande">
-          </form>
-          <div class="repl-chips" aria-label="Commandes rapides">
-            <button type="button" data-cmd="neofetch">neofetch</button>
-            <button type="button" data-cmd="skills">skills</button>
-            <button type="button" data-cmd="projets">projets</button>
-            <button type="button" data-cmd="fortune">fortune</button>
+      <section class="panel" id="apropos" data-side="1" data-title="À propos">
+        <div class="card">
+          <p class="eyebrow lift">01 · À propos</p>
+          <h2>Un développeur passionné</h2>
+          <p class="lift">Ce que j'aime : des outils utiles, un code propre, structuré et efficace, appliqué à des projets concrets : IA, applications et plugins Minecraft. Python est mon langage principal. J'apprends en parallèle Java, C# et HTML/CSS, et je repasse en Rust quand la vitesse compte.</p>
+          <blockquote class="quote lift">« Coder, c'est transformer les problèmes en solutions codées. »</blockquote>
+          <ul class="stats lift" id="stats">
+            <li><b data-key="public_repos">15</b><span>dépôts publics</span></li>
+            <li><b data-key="followers">6</b><span>abonnés</span></li>
+            <li><b>6</b><span>langages</span></li>
+            <li><b>5</b><span>types de projets</span></li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="panel" id="domaines" data-side="-1" data-title="Domaines">
+        <div class="card">
+          <p class="eyebrow lift">02 · Domaines</p>
+          <h2>Ce que je construis</h2>
+          <ul class="list lift">
+            <li><h3>Bots Discord</h3><p>Des bots qui répondent, calculent et interrogent des API.</p><code>Python · discord.py · Discord.js</code></li>
+            <li><h3>Outils en ligne de commande</h3><p>Des scripts et utilitaires rapides, lancés depuis un terminal.</p><code>Python · Rust · Regex</code></li>
+            <li><h3>Applications</h3><p>Des programmes de bureau et des exécutables .exe.</p><code>C# · Kivy · Rust</code></li>
+            <li><h3>Plugins Minecraft</h3><p>Des extensions pour serveurs Minecraft.</p><code>Java · Spigot · Paper · Bukkit</code></li>
+            <li><h3>Sites web</h3><p>Des pages rapides, adaptées au mobile.</p><code>HTML · CSS · JavaScript</code></li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="panel" id="competences" data-side="1" data-title="Compétences">
+        <div class="card">
+          <p class="eyebrow lift">03 · Compétences</p>
+          <h2>Langages et outils</h2>
+          <dl class="skills lift">
+            <div><dt>Principal</dt><dd><span class="chip hot">Python</span></dd></div>
+            <div><dt>J'apprends</dt><dd><span class="chip">Java</span><span class="chip">C#</span><span class="chip">HTML</span><span class="chip">CSS</span></dd></div>
+            <div><dt>À l'occasion</dt><dd><span class="chip">Rust</span><span class="chip">JavaScript</span><span class="chip">SQLite</span><span class="chip">Regex</span></dd></div>
+            <div><dt>Outils</dt><dd><span class="chip">Linux</span><span class="chip">Git</span><span class="chip">GitHub</span><span class="chip">VS Code</span><span class="chip">Visual Studio</span><span class="chip">Eclipse</span><span class="chip">Kivy</span><span class="chip">Spigot</span><span class="chip">Ollama</span></dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <section class="panel" id="atelier" data-side="-1" data-title="Atelier">
+        <div class="card">
+          <p class="eyebrow lift">04 · Atelier</p>
+          <h2>Ma façon de travailler</h2>
+          <ol class="flow lift">
+            <li><b>Idée</b><span>Un besoin concret.</span></li>
+            <li><b>Prototype</b><span>Vite, en Python.</span></li>
+            <li><b>Itérations</b><span>Une fonction à la fois.</span></li>
+            <li><b>Publication</b><span>Sur GitHub, rangé.</span></li>
+          </ol>
+          <dl class="kv lift">
+            <div><dt>Système</dt><dd>Linux, Termux sur Android</dd></div>
+            <div><dt>Éditeurs</dt><dd>VS Code, Visual Studio, Eclipse</dd></div>
+            <div><dt>IA en local</dt><dd>Ollama, modèles locaux</dd></div>
+            <div><dt>Style</dt><dd>Interfaces sombres, systèmes bien organisés</dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <section class="panel" id="projets" data-side="1" data-title="Projets">
+        <div class="card">
+          <p class="eyebrow lift">05 · Projets</p>
+          <h2>Dépôts GitHub</h2>
+          <ul class="repos lift" id="repos">
+            <li><a href="https://github.com/ItsPyDevs/ChloeV2"><b>ChloeV2</b></a></li>
+            <li><a href="https://github.com/ItsPyDevs/GitLive"><b>GitLive</b></a></li>
+            <li><a href="https://github.com/ItsPyDevs/Genderize"><b>Genderize</b></a></li>
+            <li><a href="https://github.com/ItsPyDevs/AskIfGay"><b>AskIfGay</b></a></li>
+            <li><a href="https://github.com/ItsPyDevs/itspydevs.github.io"><b>itspydevs.github.io</b></a></li>
+          </ul>
+          <p class="more lift"><a href="https://github.com/ItsPyDevs?tab=repositories">Tous les dépôts sur GitHub</a></p>
+        </div>
+      </section>
+
+      <section class="panel" id="faq" data-side="-1" data-title="FAQ">
+        <div class="card">
+          <p class="eyebrow lift">06 · FAQ</p>
+          <h2>Questions fréquentes</h2>
+          <div class="faq lift">
+            <details><summary>Tu peux créer un bot Discord pour moi ?</summary><p>Oui, c'est mon terrain de jeu. Explique-moi ce que le bot doit faire et sur quel serveur, et on regarde ensemble.</p></details>
+            <details><summary>Tu fais autre chose que des bots ?</summary><p>Oui : outils en ligne de commande, applications de bureau, plugins Minecraft et sites web comme celui-ci.</p></details>
+            <details><summary>Pourquoi Python en premier ?</summary><p>C'est le langage où je teste le plus vite une idée. Si besoin, je réécris ensuite dans un langage plus rapide.</p></details>
+            <details><summary>Que montre l'arrière-plan ?</summary><p>Des polytopes réguliers en 4 dimensions (tesseract, 16-cellules, 24-cellules, 5-cellules), tournés dans l'espace 4D puis projetés en 3D. Un par section.</p></details>
+            <details><summary>Comment te contacter ?</summary><p>Sur Discord. Un message suffit : le besoin, le contexte, ce que tu as déjà.</p></details>
           </div>
         </div>
-      </div>
-      <div class="scroll-hint" aria-hidden="true"><span>Défiler</span><i></i></div>
-    </section>
+      </section>
 
-    <div class="ticker" aria-hidden="true">
-      <div class="ticker-track">
-        <div class="ticker-set"><span>Python</span><i>{ }</i><span>Rust</span><i>{ }</i><span>C#</span><i>{ }</i><span>Java</span><i>{ }</i><span>JavaScript</span><i>{ }</i><span>Kivy</span><i>{ }</i><span>Linux</span><i>{ }</i><span>SQLite</span><i>{ }</i><span>Discord</span><i>{ }</i><span>Minecraft</span><i>{ }</i></div>
-        <div class="ticker-set"><span>Python</span><i>{ }</i><span>Rust</span><i>{ }</i><span>C#</span><i>{ }</i><span>Java</span><i>{ }</i><span>JavaScript</span><i>{ }</i><span>Kivy</span><i>{ }</i><span>Linux</span><i>{ }</i><span>SQLite</span><i>{ }</i><span>Discord</span><i>{ }</i><span>Minecraft</span><i>{ }</i></div>
-      </div>
+      <section class="panel" id="contact" data-side="0" data-title="Contact">
+        <div class="card">
+          <p class="eyebrow lift">07 · Contact</p>
+          <h2>Parlons de ton projet</h2>
+          <p class="lift">Un bot à créer, un outil à automatiser, une idée à tester ? Écris-moi sur Discord.</p>
+          <div class="row lift">
+            <a class="btn primary" href="https://discord.com/users/1211004235857137688">Discord</a>
+            <a class="btn" href="https://github.com/ItsPyDevs">GitHub</a>
+            <button class="btn" type="button" id="copy">Copier le lien Discord</button>
+          </div>
+          <p class="hint lift"><button class="link" type="button" data-go="0">Revenir au début</button></p>
+        </div>
+      </section>
+
     </div>
+  </div>
 
-    <section class="section wrap" id="apropos">
-      <h2>À propos</h2>
-      <div>
-        <div class="about">
-          <div class="about-text">
-            <p>Je suis un développeur passionné. Ce que j'aime : des outils utiles, un code propre, structuré et efficace, appliqué à des projets concrets : IA, applications et plugins Minecraft.</p>
-            <p>Python est mon langage principal, celui où je teste mes idées. J'apprends en parallèle Java, C# et HTML/CSS, et je repasse en Rust quand la vitesse compte.</p>
-            <p>J'aime les interfaces sombres, les systèmes bien organisés et les projets bien rangés. Une partie de mon code s'écrit même depuis mon téléphone, avec Termux.</p>
-          </div>
-          <img class="avatar" src="https://github.com/ItsPyDevs.png?size=320" width="160" height="160" alt="Avatar d'ItsPyDevs" loading="lazy">
-        </div>
-
-                <ul class="stats" id="stats" aria-label="Chiffres clés">
-          <li><b data-count="15" data-key="public_repos">0</b><span>dépôts publics</span></li>
-          <li><b data-count="6" data-key="followers">0</b><span>abonnés GitHub</span></li>
-          <li><b data-count="6">0</b><span>langages pratiqués</span></li>
-          <li><b data-count="5">0</b><span>types de projets</span></li>
-        </ul>
-
-        <blockquote class="quote">« Coder, c'est transformer les problèmes en solutions codées. »<cite>ItsPyDevs</cite></blockquote>
-
-        <ul class="method">
-          <li>
-            <h3>Local d'abord</h3>
-            <p>Des outils qui tournent sur ma machine : pas de compte à créer, pas de service qui disparaît du jour au lendemain.</p>
-          </li>
-          <li>
-            <h3>Petit, puis meilleur</h3>
-            <p>Je publie une version simple qui marche, puis je l'améliore à chaque itération plutôt que de tout planifier d'avance.</p>
-          </li>
-          <li>
-            <h3>Rapide quand il faut</h3>
-            <p>Python pour aller vite de l'idée au résultat, Rust quand la vitesse d'exécution devient le sujet.</p>
-          </li>
-        </ul>
-
-        <h3 class="sub">Ce que j'aime</h3>
-        <ul class="likes">
-          <li><span aria-hidden="true">🌙</span><h4>Les interfaces sombres</h4><p>Pour les yeux, et parce qu'un terminal ou un éditeur sombre, c'est simplement chez moi.</p></li>
-          <li><span aria-hidden="true">🧱</span><h4>Les systèmes bien organisés</h4><p>Des dossiers rangés, des noms clairs, des projets bien structurés : on s'y retrouve dans six mois.</p></li>
-          <li><span aria-hidden="true">🐧</span><h4>Linux et le terminal</h4><p>Ligne de commande, scripts et outils qui font une chose bien.</p></li>
-          <li><span aria-hidden="true">📱</span><h4>Coder partout</h4><p>Un PC, mais aussi mon téléphone avec Termux quand une idée arrive loin du bureau.</p></li>
-          <li><span aria-hidden="true">🔁</span><h4>Les petites itérations</h4><p>Une version qui marche, puis une meilleure. Publier tôt, corriger vite.</p></li>
-          <li><span aria-hidden="true">📚</span><h4>Apprendre en construisant</h4><p>Java, C#, HTML/CSS : je les apprends en les utilisant sur de vrais projets.</p></li>
-        </ul>
-
-      </div>
-    </section>
-
-    <section class="section wrap" id="domaines">
-      <h2>Domaines</h2>
-      <ul class="domains">
-        <li class="domain">
-          <h3>Bots Discord</h3>
-          <div>
-            <p>Des bots qui répondent, calculent et interrogent des API.</p>
-            <p class="stack">Python, discord.py, Discord.js, SQLite</p>
-          </div>
-        </li>
-        <li class="domain">
-          <h3>Outils en ligne de commande</h3>
-          <div>
-            <p>Des scripts et des utilitaires rapides, à lancer depuis un terminal.</p>
-            <p class="stack">Python, Rust, Regex</p>
-          </div>
-        </li>
-        <li class="domain">
-          <h3>Applications</h3>
-          <div>
-            <p>Des programmes de bureau et des exécutables .exe pour Windows.</p>
-            <p class="stack">C#, Windows Forms, Rust</p>
-          </div>
-        </li>
-        <li class="domain">
-          <h3>Plugins Minecraft</h3>
-          <div>
-            <p>Des extensions pour serveurs Minecraft.</p>
-            <p class="stack">Java, Paper, Bukkit, Spigot</p>
-          </div>
-        </li>
-        <li class="domain">
-          <h3>Sites web</h3>
-          <div>
-            <p>Des pages rapides, adaptées au mobile et interactives.</p>
-            <p class="stack">HTML, CSS, JavaScript</p>
-          </div>
-        </li>
-      </ul>
-    </section>
-
-    <section class="section wrap" id="competences">
-      <h2>Compétences</h2>
-      <dl class="skills">
-        <div class="skill-row">
-          <dt>Langages</dt>
-          <dd>
-            <ul>
-              <li><img src="https://skillicons.dev/icons?i=py" alt="" width="28" height="28" loading="lazy">Python</li>
-              <li><img src="https://skillicons.dev/icons?i=rust" alt="" width="28" height="28" loading="lazy">Rust</li>
-              <li><img src="https://skillicons.dev/icons?i=js" alt="" width="28" height="28" loading="lazy">JavaScript</li>
-              <li><img src="https://skillicons.dev/icons?i=cs" alt="" width="28" height="28" loading="lazy">C#</li>
-              <li><img src="https://skillicons.dev/icons?i=java" alt="" width="28" height="28" loading="lazy">Java</li>
-              <li><img src="https://skillicons.dev/icons?i=html" alt="" width="28" height="28" loading="lazy">HTML</li>
-              <li><img src="https://skillicons.dev/icons?i=css" alt="" width="28" height="28" loading="lazy">CSS</li>
-              <li><img src="https://skillicons.dev/icons?i=sqlite" alt="" width="28" height="28" loading="lazy">SQLite</li>
-              <li><img src="https://skillicons.dev/icons?i=regex" alt="" width="28" height="28" loading="lazy">Regex</li>
-            </ul>
-          </dd>
-        </div>
-        <div class="skill-row">
-          <dt>Outils</dt>
-          <dd>
-            <ul>
-              <li><img src="https://skillicons.dev/icons?i=vscode" alt="" width="28" height="28" loading="lazy">VS Code</li>
-              <li><img src="https://skillicons.dev/icons?i=visualstudio" alt="" width="28" height="28" loading="lazy">Visual Studio</li>
-              <li><img src="https://skillicons.dev/icons?i=eclipse" alt="" width="28" height="28" loading="lazy">Eclipse</li>
-              <li><img src="https://skillicons.dev/icons?i=linux" alt="" width="28" height="28" loading="lazy">Linux</li>
-              <li><span class="ico-txt" aria-hidden="true">Kv</span>Kivy</li>
-              <li><span class="ico-txt" aria-hidden="true">Sp</span>Spigot</li>
-              <li><img src="https://skillicons.dev/icons?i=git" alt="" width="28" height="28" loading="lazy">Git</li>
-              <li><img src="https://skillicons.dev/icons?i=github" alt="" width="28" height="28" loading="lazy">GitHub</li>
-              <li><img src="https://skillicons.dev/icons?i=discord" alt="" width="28" height="28" loading="lazy">Discord</li>
-              <li><img src="https://skillicons.dev/icons?i=stackoverflow" alt="" width="28" height="28" loading="lazy">Stack Overflow</li>
-            </ul>
-          </dd>
-        </div>
-        <div class="skill-row">
-          <dt>Pratiques</dt>
-          <dd>
-            <ul class="plain">
-              <li>Contrôle de version et collaboration avec Git et GitHub</li>
-              <li>Expressions régulières pour valider et transformer du texte</li>
-              <li>Bases de données légères avec SQLite</li>
-              <li>Développement aussi depuis mon téléphone, avec Termux</li>
-              <li>Apprentissage continu, par petits projets concrets</li>
-            </ul>
-          </dd>
-        </div>
-      </dl>
-    </section>
-
-    <section class="section wrap" id="atelier">
-      <h2>Atelier</h2>
-      <div>
-        <p class="lead-sm">Comment je travaille, avec quoi, et où j'en suis dans mon apprentissage.</p>
-
-        <h3 class="sub">Mon processus</h3>
-        <ol class="flow">
-          <li><i>01</i><h4>Une idée</h4><p>Un besoin concret : un bot qui répond, un outil qui automatise, une appli qui manquait.</p></li>
-          <li><i>02</i><h4>Un prototype</h4><p>Je pars vite en Python pour vérifier que l'idée tient debout.</p></li>
-          <li><i>03</i><h4>Des itérations</h4><p>Je nettoie, je structure, j'ajoute une fonction à la fois, avec des retours.</p></li>
-          <li><i>04</i><h4>La publication</h4><p>Le code arrive sur GitHub, lisible et rangé, prêt à être réutilisé.</p></li>
-        </ol>
-
-        <h3 class="sub">Mon environnement</h3>
-        <dl class="kv">
-          <div><dt>Système</dt><dd>Linux</dd></div>
-          <div><dt>Éditeurs</dt><dd>VS Code, Visual Studio, Eclipse</dd></div>
-          <div><dt>Mobile</dt><dd>Termux sur Android</dd></div>
-          <div><dt>IA en local</dt><dd>Ollama, modèles locaux</dd></div>
-          <div><dt>Interfaces</dt><dd>Kivy pour les applications</dd></div>
-          <div><dt>Minecraft</dt><dd>Spigot, Paper, Bukkit</dd></div>
-          <div><dt>Versions</dt><dd>Git et GitHub</dd></div>
-          <div><dt>Téléchargement</dt><dd>yt-dlp pour mes scripts média</dd></div>
-        </dl>
-
-        <h3 class="sub">Où j'en suis</h3>
-        <ul class="levels">
-          <li><b>Python</b><span class="tag now">Langage principal</span><p>Bots Discord, scripts, applications, appels d'API.</p></li>
-          <li><b>Java</b><span class="tag learn">J'apprends</span><p>Surtout pour les plugins Minecraft.</p></li>
-          <li><b>C#</b><span class="tag learn">J'apprends</span><p>Applications Windows et exécutables.</p></li>
-          <li><b>HTML / CSS</b><span class="tag learn">J'apprends</span><p>Des pages rapides, adaptées au mobile, comme ce site.</p></li>
-          <li><b>Rust</b><span class="tag some">À l'occasion</span><p>Quand la vitesse ou un exécutable léger comptent.</p></li>
-        </ul>
-      </div>
-    </section>
-
-    <section class="section wrap" id="projets">
-      <h2>Projets</h2>
-      <div class="projects-wrap">
-        <div class="toolbar">
-          <div class="filters" id="filters" role="group" aria-label="Filtrer par langage" hidden></div>
-          <button type="button" class="linkish" id="toggle-all" aria-expanded="false" hidden>Voir tous les dépôts</button>
-        </div>
-
-        <ul class="projects" id="projects">
-          <li class="project"><div class="project-body"><h3><a href="https://github.com/ItsPyDevs/AskIfGay">AskIfGay</a></h3></div></li>
-          <li class="project"><div class="project-body"><h3><a href="https://github.com/ItsPyDevs/ChloeV2">ChloeV2</a></h3></div></li>
-          <li class="project"><div class="project-body"><h3><a href="https://github.com/ItsPyDevs/Genderize">Genderize</a></h3></div></li>
-          <li class="project"><div class="project-body"><h3><a href="https://github.com/ItsPyDevs/GitLive">GitLive</a></h3></div></li>
-          <li class="project"><div class="project-body"><h3><a href="https://github.com/ItsPyDevs/ItsPyDevs">ItsPyDevs</a></h3></div></li>
-          <li class="project"><div class="project-body"><h3><a href="https://github.com/ItsPyDevs/itspydevs.github.io">itspydevs.github.io</a></h3></div></li>
-        </ul>
-
-        <figure class="langs" id="langs" hidden>
-          <figcaption>Langages de mes dépôts publics</figcaption>
-          <div class="bar" id="bar" role="img" aria-label=""></div>
-          <ul class="legend" id="legend"></ul>
-          <ul class="totals" id="totals"></ul>
-        </figure>
-
-        
-        <h3 class="sub wip-title">En chantier</h3>
-        <ul class="wip">
-          <li><span class="tag learn">Bot Discord</span><h4>JewStice</h4><p>Un bot Discord prêt pour la production, écrit en Python puis porté en Rust.</p></li>
-          <li><span class="tag learn">Application locale</span><h4>Générateur d'images et de texte</h4><p>Une application de bureau qui génère tout en local, sans compte ni service en ligne.</p></li>
-          <li><span class="tag learn">Rust</span><h4>ia.exe</h4><p>Une application Rust ultra rapide, style terminal, pour interroger une IA par API ou avec Ollama.</p></li>
-          <li><span class="tag learn">Script Python</span><h4>YT Music Downloader</h4><p>Un script pour télécharger sa propre bibliothèque YouTube Music, en local.</p></li>
-          <li><span class="tag learn">Mobile</span><h4>RedTok</h4><p>Une appli React Native avec Expo, façon TikTok, pour des vidéos courtes venues de Reddit.</p></li>
-        </ul>
-        <p class="more"><a href="https://github.com/ItsPyDevs?tab=repositories">Tous les dépôts sur GitHub</a></p>
-      </div>
-    </section>
-
-    <section class="section wrap" id="activite" hidden>
-      <h2>Activité</h2>
-      <div>
-        <p class="feed-lead" id="feed-lead"></p>
-        <ol class="feed" id="feed"></ol>
-      </div>
-    </section>
-
-    <section class="section wrap" id="faq">
-      <h2>FAQ</h2>
-      <div class="faq">
-        <details><summary>Tu peux créer un bot Discord pour moi ?</summary><p>Oui, c'est mon terrain de jeu. Explique-moi ce que le bot doit faire, sur quel serveur, et on regarde ensemble. Je pars sur discord.py ou Discord.js selon le besoin.</p></details>
-        <details><summary>Tu fais d'autres choses que des bots ?</summary><p>Oui : des outils en ligne de commande, des applications de bureau (C#, Kivy, Rust), des plugins Minecraft (Spigot, Paper) et des sites web comme celui-ci.</p></details>
-        <details><summary>Pourquoi Python en premier ?</summary><p>C'est le langage où je teste le plus vite une idée. Si le projet doit ensuite être plus rapide ou plus léger, je peux le réécrire dans un autre langage.</p></details>
-        <details><summary>Tu travailles avec des services en ligne ?</summary><p>Je préfère les outils qui tournent en local : pas de compte à créer, pas de dépendance à un service qui peut disparaître. Quand une API est utile, je l'utilise.</p></details>
-        <details><summary>Ton code est-il public ?</summary><p>Beaucoup de mes projets sont sur GitHub, dans la section Projets. Les petits dépôts sont publiés tôt, puis améliorés au fil du temps.</p></details>
-        <details><summary>Comment te contacter le plus vite ?</summary><p>Sur Discord. Un message suffit : le besoin, le contexte, ce que tu as déjà. Tu peux aussi copier mon lien Discord depuis la section Contact.</p></details>
-        <details><summary>Tu apprends encore ?</summary><p>Tout le temps. Java, C# et HTML/CSS sont en cours d'apprentissage, et chaque projet m'apprend quelque chose de nouveau.</p></details>
-      </div>
-    </section>
-
-    <section class="section wrap" id="contact">
-      <h2>Contact</h2>
-      <div>
-        <p class="contact-lead">Un bot à créer, un outil à automatiser, une idée à tester ? Écris-moi sur Discord, on regarde ça ensemble.</p>
-
-        <ol class="steps">
-          <li>
-            <h3>Tu m'expliques l'idée</h3>
-            <p>Un message suffit : le besoin, le contexte, ce que tu as déjà.</p>
-          </li>
-          <li>
-            <h3>Je livre une première version</h3>
-            <p>Simple, qui fonctionne, pour valider la direction.</p>
-          </li>
-          <li>
-            <h3>On itère</h3>
-            <p>J'améliore par petites étapes, avec tes retours.</p>
-          </li>
-        </ol>
-
-        <ul class="contact-links">
-          <li><a href="https://discord.com/users/1211004235857137688">Discord</a></li>
-          <li><a href="https://github.com/ItsPyDevs">GitHub</a></li>
-          <li><button type="button" class="copy-btn" id="copy-discord">Copier le lien Discord</button></li>
-        </ul>
-        <p class="copy-status" id="copy-status" role="status" aria-live="polite"></p>
-      </div>
-    </section>
-  </main>
-
-  <footer class="site-footer">
-    <div class="wrap"><p class="wordmark" id="wordmark" aria-hidden="true">ItsPyDevs</p></div>
-    <div class="wrap foot">
-      <div>
-        <p class="foot-brand">ItsPyDevs</p>
-        <p>© <span id="year">2026</span> ItsPyDevs. Tous droits réservés.</p>
-        <p>Écrit à la main en HTML, CSS et JavaScript, sans framework.</p>
-        <p id="site-updated" hidden></p>
-      </div>
-      <ul class="foot-links">
-        <li><a href="#apropos">À propos</a></li>
-        <li><a href="#domaines">Domaines</a></li>
-        <li><a href="#atelier">Atelier</a></li>
-        <li><a href="#projets">Projets</a></li>
-        <li><a href="#faq">FAQ</a></li>
-        <li><a href="#contact">Contact</a></li>
-        <li><a href="#top">Retour en haut</a></li>
-      </ul>
-    </div>
-  </footer>
-
-  <dialog id="project" class="modal" aria-labelledby="project-title">
-    <div class="pd">
-      <div class="pd-head">
-        <h3 id="project-title"></h3>
-        <button type="button" class="icon-btn" id="project-close">Fermer</button>
-      </div>
-      <p class="desc" id="project-desc"></p>
-      <ul class="meta" id="project-meta"></ul>
-      <ul class="topics" id="project-topics"></ul>
-      <div class="pd-langs" id="project-langs" hidden>
-        <div class="bar" id="project-bar" role="img" aria-label=""></div>
-        <ul class="legend" id="project-legend"></ul>
-      </div>
-      <p class="readme" id="project-readme"></p>
-      <div class="pd-actions">
-        <a class="btn btn-primary" id="project-link" href="https://github.com/ItsPyDevs">Voir sur GitHub</a>
-      </div>
-    </div>
-  </dialog>
-
-  <dialog id="palette" class="modal" aria-label="Palette de commandes">
-    <input id="palette-in" type="text" role="combobox" aria-expanded="true" aria-controls="palette-list" aria-autocomplete="list" aria-label="Rechercher une commande" placeholder="Aller à, ouvrir, changer de thème" autocomplete="off" spellcheck="false">
-    <ul id="palette-list" role="listbox" aria-label="Résultats"></ul>
-    <p class="palette-foot">Flèches pour choisir, Entrée pour valider, Échap pour fermer.</p>
-  </dialog>
+  <div id="spacer" aria-hidden="true"></div>
+  <nav class="dots" id="dots" aria-label="Aller à une section"></nav>
+  <div class="hud" id="hud" aria-hidden="true"></div>
+  <noscript><style>#world{position:static!important}.panel{position:relative!important;transform:none!important}</style></noscript>
 </body>
 </html>

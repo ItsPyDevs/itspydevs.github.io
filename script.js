@@ -171,14 +171,14 @@
         const h = $("h1, h2", p);
         c.push({ g: "Aller à", ic: "›", t: p.dataset.title || p.id, d: h ? h.textContent : "", k: String(i + 1), key: i < 9 ? String(i + 1) : "", on: i === cur, run: () => app.go(i) });
       });
-      const act = (t, d, k, run, ic) => c.push({ g: "Actions", ic: ic || "▸", t, d, k, run });
-      act("Copier le lien Discord", "pour m'écrire", "discord copier lien contact", () => copyText(CONFIG.discord).then(() => toast("Lien Discord copié"), () => toast("Copie impossible")));
-      act("Ouvrir Discord", "mon profil ↗", "discord message ecrire contact", () => window.open(CONFIG.discord, "_blank", "noopener"), "↗");
-      act("Ouvrir mon GitHub", "github.com/" + CONFIG.github + " ↗", "github profil code depots", () => window.open("https://github.com/" + CONFIG.github, "_blank", "noopener"), "↗");
-      act("Copier le lien de cette section", "#" + panels[cur].id, "partager url ancre lien", () => copyText(shareUrl(cur)).then(() => toast("Lien de la section copié"), () => toast("Copie impossible")));
-      if (navigator.share) act("Partager le site", "envoyer à quelqu'un", "partager envoyer", () => navigator.share({ title: document.title, url: shareUrl(cur) }).catch(() => {}));
-      if (app.mode3d && app.tour) act(app.tour.active() ? "Arrêter la visite automatique" : "Lancer la visite automatique", "défile toutes les sections", "visite tour auto demo presentation", () => (app.tour.active() ? app.tour.stop() : app.tour.start()), "▶");
-      act("Imprimer / enregistrer en PDF", "mise en page propre", "imprimer pdf cv export", () => window.print(), "⎙");
+      const add = (t, d, k, run, ic) => c.push({ g: "Actions", ic: ic || "▸", t, d, k, run });
+      add("Copier le lien Discord", "pour m'écrire", "discord copier lien contact", () => copyText(CONFIG.discord).then(() => toast("Lien Discord copié"), () => toast("Copie impossible")));
+      add("Ouvrir Discord", "mon profil ↗", "discord message ecrire contact", () => window.open(CONFIG.discord, "_blank", "noopener"), "↗");
+      add("Ouvrir mon GitHub", "github.com/" + CONFIG.github + " ↗", "github profil code depots", () => window.open("https://github.com/" + CONFIG.github, "_blank", "noopener"), "↗");
+      add("Copier le lien de cette section", "#" + panels[cur].id, "partager url ancre lien", () => copyText(shareUrl(cur)).then(() => toast("Lien de la section copié"), () => toast("Copie impossible")));
+      if (navigator.share) add("Partager le site", "envoyer à quelqu'un", "partager envoyer", () => navigator.share({ title: document.title, url: shareUrl(cur) }).catch(() => {}));
+      if (app.mode3d && app.tour) add(app.tour.active() ? "Arrêter la visite automatique" : "Lancer la visite automatique", "défile toutes les sections", "visite tour auto demo presentation", () => (app.tour.active() ? app.tour.stop() : app.tour.start()), "▶");
+      add("Imprimer / enregistrer en PDF", "mise en page propre", "imprimer pdf cv export", () => window.print(), "⎙");
       if (!reduce) {
         [["max", "Qualité maximale", "3D, WebGL et tous les effets"], ["eco", "Mode éco", "3D allégée, sans WebGL"], ["flat", "Version simple", "page à plat, sans animation"]]
           .forEach((m) => c.push({ g: "Affichage", ic: "◐", t: m[1], d: m[2], k: "qualite performance fluide lent batterie " + m[0], on: fx === m[0], run: () => setFx(m[0]) }));
@@ -318,7 +318,7 @@
     if ((e.ctrlKey || e.metaKey) && !e.shiftKey && k.toLowerCase() === "k") { e.preventDefault(); palette.open(); return; }
     if (e.ctrlKey || e.metaKey || typing) return;
     if (k === "/" || k === "?") { e.preventDefault(); palette.open(); return; }
-    const m = /^(?:Digit|Numpad)([1-9])$/.exec(e.code || "");   // e.code : marche aussi en AZERTY
+    const m = /^Digit([1-9])$/.exec(e.code || "") || (/^[1-9]$/.test(k) && /^Numpad([1-9])$/.exec(e.code || ""));   // e.code : marche aussi en AZERTY
     if (m && +m[1] <= N) { e.preventDefault(); app.go(+m[1] - 1); }
     else if (k === "ArrowRight") { e.preventDefault(); app.step(1); }
     else if (k === "ArrowLeft") { e.preventDefault(); app.step(-1); }
@@ -409,7 +409,7 @@
   function stepFly(now) {
     if (!fly) return;
     const k = clamp((now - fly.t0) / fly.dur, 0, 1);
-    const e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;      // easeInOutCubic
+    const e = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;          // easeInOutQuad : démarre vite, freine en douceur
     const f = k >= 1 ? fly.i : fOf(fly.g0 + (fly.g1 - fly.g0) * e);
     ps = target = clamp(f / (N - 1), 0, 1);
     window.scrollTo(0, ps * range);
@@ -456,7 +456,7 @@
   addEventListener("keydown", (e) => {
     if (performance.now() - tourAt > 150) tour.stop();
     const onControl = e.target.closest && e.target.closest("button, a, summary, input, textarea, select");
-    if (SCROLL_KEYS.indexOf(e.key) >= 0 || (e.key === " " && !onControl)) fly = null;
+    if (!e.defaultPrevented && (SCROLL_KEYS.indexOf(e.key) >= 0 || (e.key === " " && !onControl))) fly = null;
   });
   document.addEventListener("pointerdown", (e) => { if (!(e.target.closest && e.target.closest(".pal"))) { if (performance.now() - tourAt > 150) tour.stop(); } });
 
@@ -767,14 +767,14 @@
   }
   function tick(now) { raf = requestAnimationFrame(tick); frame(now); }
 
+  root.classList.add("fly");                                  // d'abord : la page à plat est plus courte que le couloir 3D
+  root.classList.toggle("eco", eco);
+  pager.hidden = false;
+  app.mode3d = true;
   layout();
   const h0 = location.hash.slice(1), i0 = items.findIndex((it) => it.id === h0);
   if (i0 > 0) { scrollTo(0, (range * i0) / (N - 1)); target = ps = clamp(scrollY / range, 0, 1); }
   else { ps = target; }
-  root.classList.add("fly");
-  root.classList.toggle("eco", eco);
-  pager.hidden = false;
-  app.mode3d = true;
 
   addEventListener("resize", () => { layout(); if (gl) { gl.size(); gl.placePolys(); } });
   let hiddenAt = 0;

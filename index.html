@@ -11,8 +11,12 @@
   <meta property="og:description" content="Un portfolio à parcourir en 3D. Bots, outils, applications.">
   <meta property="og:url" content="https://itspydevs.github.io/">
   <meta property="og:image" content="https://github.com/ItsPyDevs.png">
-  <script>(function(){var d=document.documentElement;if(!matchMedia("(prefers-reduced-motion: reduce)").matches){d.classList.add("js");setTimeout(function(){if(!d.classList.contains("fly"))d.classList.remove("js")},3000)}})()</script>
+  <meta property="og:site_name" content="ItsPyDevs">
+  <meta property="og:locale" content="fr_FR">
+  <meta name="twitter:card" content="summary">
+  <script>(function(){var d=document.documentElement,f,a;try{f=localStorage.getItem("ipd-fx");a=localStorage.getItem("ipd-accent")}catch(e){}if(a)d.setAttribute("data-accent",a);if(f==="eco")d.classList.add("eco");if(f!=="flat"&&!matchMedia("(prefers-reduced-motion: reduce)").matches){d.classList.add("js");setTimeout(function(){if(!d.classList.contains("fly"))d.classList.remove("js")},3000)}})()</script>
   <link rel="canonical" href="https://itspydevs.github.io/">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"Antoine","alternateName":"ItsPyDevs","url":"https://itspydevs.github.io/","image":"https://github.com/ItsPyDevs.png","jobTitle":"Développeur","knowsAbout":["Python","Rust","Java","C#","Bots Discord","Plugins Minecraft"],"sameAs":["https://github.com/ItsPyDevs"]}</script>
   <link rel="icon" href="FAVICON.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,6 +41,11 @@
         <li><a href="#contact" data-go="7">Contact</a></li>
       </ul>
     </nav>
+    <button class="kbtn" id="open-pal" type="button" hidden aria-haspopup="dialog" aria-keyshortcuts="Control+K Meta+K /" aria-label="Ouvrir le menu de commandes">
+      <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M8.5 3a5.5 5.5 0 1 0 3.4 9.8l3.6 3.6 1.1-1.1-3.6-3.6A5.5 5.5 0 0 0 8.5 3Zm0 1.5a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z" fill="currentColor"/></svg>
+      <span class="kbtn-t">Menu</span><kbd>Ctrl K</kbd>
+    </button>
+    <div class="progress" id="progress" aria-hidden="true"><i></i></div>
   </header>
 
   <div id="world">
@@ -52,7 +61,7 @@
             <a class="btn primary" href="#apropos" data-go="1">Entrer dans la page</a>
             <a class="btn" href="#contact" data-go="7">Me contacter</a>
           </div>
-          <p class="hint lift"><span class="live" aria-hidden="true"></span>En développement actif · Défile, glisse ou utilise les flèches</p>
+          <p class="hint lift"><span class="live" aria-hidden="true"></span>En développement actif · Défile, glisse ou clique sur « Suivant »<span class="kk"> · <kbd>Ctrl</kbd> <kbd>K</kbd> pour tout chercher</span></p>
         </div>
       </section>
 
@@ -161,11 +170,39 @@
       </section>
 
     </div>
+    <div class="warp" id="warp" aria-hidden="true"></div>
   </div>
 
   <div id="spacer" aria-hidden="true"></div>
   <nav class="dots" id="dots" aria-label="Aller à une section"></nav>
   <div class="hud" id="hud" aria-hidden="true"></div>
+
+  <div class="pager" id="pager" hidden>
+    <button class="prev" id="prev" type="button" data-off="1" aria-label="Section précédente">
+      <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3 10l5-5 5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="next" id="next" type="button" data-idx="0" data-last="false" aria-label="Suivant : À propos">
+      <span class="next-label">Suivant</span>
+      <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3 6l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+
+  <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+
+  <dialog class="pal" id="pal" aria-labelledby="pal-title">
+    <div class="pal-box" tabindex="-1">
+      <h2 class="sr" id="pal-title">Menu de commandes</h2>
+      <div class="pal-field">
+        <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M8.5 3a5.5 5.5 0 1 0 3.4 9.8l3.6 3.6 1.1-1.1-3.6-3.6A5.5 5.5 0 0 0 8.5 3Zm0 1.5a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z" fill="currentColor"/></svg>
+        <input id="pal-q" type="text" role="combobox" aria-expanded="true" aria-controls="pal-list" aria-autocomplete="list" aria-label="Rechercher une section, un projet ou une action" placeholder="Aller à… section, projet, action" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go">
+        <button class="pal-x" id="pal-close" type="button" aria-label="Fermer le menu">esc</button>
+      </div>
+      <ul class="pal-list" id="pal-list" role="listbox" aria-label="Résultats"></ul>
+      <p class="pal-foot" aria-hidden="true"><span><kbd>↑</kbd> <kbd>↓</kbd> naviguer</span><span><kbd>↵</kbd> ouvrir</span><span><kbd>1</kbd>-<kbd>8</kbd> sections</span><span><kbd>←</kbd> <kbd>→</kbd> pas à pas</span></p>
+    </div>
+  </dialog>
+
+  <p class="print-only">ItsPyDevs · Antoine, développeur · itspydevs.github.io · github.com/ItsPyDevs · Discord : discord.com/users/1211004235857137688</p>
   <noscript><style>#world{position:static!important}.panel{position:relative!important;transform:none!important}</style></noscript>
 </body>
 </html>

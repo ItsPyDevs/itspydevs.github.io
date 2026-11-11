@@ -2,16 +2,90 @@
    Une caméra avance dans un couloir de panneaux HTML placés dans l'espace (CSS 3D).
    Une scène three.js, calée sur la même caméra, dessine derrière eux des polytopes 4D,
    un tunnel d'étoiles, des cadres et un sol en perspective.
-   Sans JavaScript, sans WebGL ou avec « réduire les animations », la page s'affiche à plat. */
+   Sans JavaScript, avec « réduire les animations » ou en « version simple », la page s'affiche à plat. */
 (function () {
   "use strict";
 
   const root = document.documentElement;
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const coarse = matchMedia("(pointer: coarse)").matches;
+  const fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
   const $ = (s, r) => (r || document).querySelector(s);
   const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const smooth = (t) => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
+
+  /* ------------------------------------------------------------------ */
+  /* Réglages                                                            */
+  /* ------------------------------------------------------------------ */
+  const CONFIG = {
+    github: "ItsPyDevs",
+    discord: "https://discord.com/users/1211004235857137688",
+  };
+  const THEMES = [["violet", "Violet"], ["cyan", "Cyan"], ["vert", "Vert"], ["ambre", "Ambre"], ["rose", "Rose"]];
+
+  const store = {
+    get(k) { try { return localStorage.getItem("ipd-" + k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem("ipd-" + k, v); } catch (e) {} },
+  };
+
+  const panels = $$(".panel"), N = panels.length;
+  let fx = store.get("fx");                                   // qualité : max | eco | flat
+  const fxChosen = fx === "max" || fx === "eco" || fx === "flat";
+  if (!fxChosen) fx = "max";
+  let accent = store.get("accent");
+  if (!THEMES.some((t) => t[0] === accent)) accent = "violet";
+  root.setAttribute("data-accent", accent);
+
+  /* points d'accroche entre l'interface commune et le mode 3D */
+  const app = { mode3d: false, go: null, step: null, cur: null, tour: null, applyFx: null, applyAccent: null };
+
+  /* ------------------------------------------------------------------ */
+  /* Notifications, copie, dates                                         */
+  /* ------------------------------------------------------------------ */
+  const toastBox = $("#toasts");
+  function toast(msg, action) {
+    if (!toastBox) return;
+    const t = document.createElement("div"), s = document.createElement("span");
+    t.className = "toast"; s.textContent = msg; t.appendChild(s);
+    let timer = 0;
+    const kill = () => { clearTimeout(timer); t.classList.remove("in"); setTimeout(() => t.remove(), 320); };
+    if (action) {
+      const b = document.createElement("button");
+      b.type = "button"; b.textContent = action.label;
+      b.addEventListener("click", () => { kill(); action.run(); });
+      t.appendChild(b);
+    }
+    toastBox.appendChild(t);
+    while (toastBox.children.length > 3) toastBox.firstElementChild.remove();
+    requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add("in")));
+    timer = setTimeout(kill, action ? 8000 : 2600);
+  }
+
+  function copyText(text) {
+    return new Promise((ok, ko) => {
+      const fallback = () => {
+        const t = document.createElement("textarea");
+        t.value = text; t.setAttribute("readonly", ""); t.style.cssText = "position:fixed;top:0;left:0;opacity:0";
+        document.body.appendChild(t); t.select();
+        let done = false;
+        try { done = document.execCommand("copy"); } catch (e) {}
+        t.remove();
+        if (done) ok(); else ko();
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(ok, fallback); else fallback();
+    });
+  }
+
+  function ago(iso) {
+    const d = (Date.now() - new Date(iso).getTime()) / 864e5;
+    if (!isFinite(d) || d < 0) return "";
+    if (d < 1) return "aujourd'hui";
+    if (d < 2) return "hier";
+    if (d < 30) return "il y a " + Math.floor(d) + " j";
+    if (d < 365) return "il y a " + Math.floor(d / 30) + " mois";
+    return "il y a " + Math.floor(d / 365) + (d >= 730 ? " ans" : " an");
+  }
 
   /* ------------------------------------------------------------------ */
   /* Contenu dynamique (utile aussi en mode à plat)                      */
@@ -26,20 +100,20 @@
       .then((d) => { try { sessionStorage.setItem(key, JSON.stringify({ t: Date.now(), d })); } catch (e) {} return d; });
   }
 
+  let repoAll = [];                                           // tous les dépôts (pour le menu de commandes)
   function loadRepos() {
     const ul = $("#repos");
-    if (!ul) return;
-    cached("gh3d-repos", "https://api.github.com/users/ItsPyDevs/repos?per_page=100&sort=pushed", 600000)
+    cached("gh3d-repos", "https://api.github.com/users/" + CONFIG.github + "/repos?per_page=100&sort=pushed", 600000)
       .then((all) => {
-        const list = all.filter((r) => !r.fork && r.name !== "ItsPyDevs" && r.html_url)
-          .sort((a, b) => new Date(b.pushed_at) - new Date(a.pushed_at)).slice(0, 6);
-        if (!list.length) return;
+        repoAll = all.filter((r) => !r.fork && r.name !== CONFIG.github && r.html_url)
+          .sort((a, b) => new Date(b.pushed_at) - new Date(a.pushed_at));
+        if (!ul || !repoAll.length) return;
         ul.textContent = "";
-        list.forEach((r) => {
+        repoAll.slice(0, 6).forEach((r) => {
           const li = document.createElement("li"), a = document.createElement("a"), b = document.createElement("b");
           a.href = r.html_url; b.textContent = r.name; a.appendChild(b);
           if (r.description) { const p = document.createElement("p"); p.textContent = r.description; a.appendChild(p); }
-          const meta = [r.language, r.stargazers_count ? r.stargazers_count + " ★" : ""].filter(Boolean).join(" · ");
+          const meta = [r.language, r.stargazers_count ? r.stargazers_count + " ★" : "", ago(r.pushed_at)].filter(Boolean).join(" · ");
           if (meta) { const s = document.createElement("small"); s.textContent = meta; a.appendChild(s); }
           li.appendChild(a); ul.appendChild(li);
         });
@@ -49,33 +123,229 @@
   function loadStats() {
     const nodes = $$("#stats b[data-key]");
     if (!nodes.length) return;
-    cached("gh3d-user", "https://api.github.com/users/ItsPyDevs", 600000)
-      .then((u) => nodes.forEach((n) => { const v = u[n.dataset.key]; if (typeof v === "number") n.textContent = v; }))
+    cached("gh3d-user", "https://api.github.com/users/" + CONFIG.github, 600000)
+      .then((u) => nodes.forEach((n) => {
+        const v = u[n.dataset.key];
+        if (typeof v !== "number") return;
+        n.dataset.val = String(v);                            // valeur cible du compteur animé
+        if (!n.dataset.wait) n.textContent = v;
+      }))
       .catch(() => {});
   }
 
   function initCopy() {
     const b = $("#copy");
     if (!b) return;
-    const url = "https://discord.com/users/1211004235857137688";
-    const done = () => { b.textContent = "Lien copié"; setTimeout(() => (b.textContent = "Copier le lien Discord"), 2000); };
+    const label = b.textContent;
     b.addEventListener("click", () => {
-      const fallback = () => {
-        const t = document.createElement("textarea"); t.value = url; t.style.position = "fixed"; t.style.opacity = "0";
-        document.body.appendChild(t); t.select();
-        try { document.execCommand("copy"); done(); } catch (e) {}
-        t.remove();
-      };
-      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done, fallback); else fallback();
+      const done = (t) => { b.textContent = t; setTimeout(() => (b.textContent = label), 2000); };
+      copyText(CONFIG.discord).then(() => done("Lien copié"), () => done("Copie impossible"));
     });
   }
 
   loadRepos(); loadStats(); initCopy();
 
   /* ------------------------------------------------------------------ */
+  /* Menu de commandes (Ctrl K, /, bouton Menu)                          */
+  /* ------------------------------------------------------------------ */
+  const shareUrl = (i) => location.href.split("#")[0] + "#" + panels[i].id;
+
+  function initPalette() {
+    const pal = $("#pal"), input = $("#pal-q"), list = $("#pal-list"), btn = $("#open-pal");
+    const none = { open() {}, isOpen: () => false };
+    if (!pal || !input || !list || typeof pal.showModal !== "function") return none;
+    const box = $(".pal-box", pal);
+    let all = [], shown = [], act = 0;
+    const norm = (s) => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+
+    if (btn) {
+      btn.hidden = false;
+      const kb = $("kbd", btn);
+      if (kb) kb.textContent = /Mac|iPhone|iPad/i.test(navigator.platform || navigator.userAgent) ? "⌘ K" : "Ctrl K";
+      btn.addEventListener("click", () => open());
+    }
+
+    function commands() {
+      const c = [], cur = app.cur ? app.cur() : 0;
+      panels.forEach((p, i) => {
+        const h = $("h1, h2", p);
+        c.push({ g: "Aller à", ic: "›", t: p.dataset.title || p.id, d: h ? h.textContent : "", k: String(i + 1), key: i < 9 ? String(i + 1) : "", on: i === cur, run: () => app.go(i) });
+      });
+      const act = (t, d, k, run, ic) => c.push({ g: "Actions", ic: ic || "▸", t, d, k, run });
+      act("Copier le lien Discord", "pour m'écrire", "discord copier lien contact", () => copyText(CONFIG.discord).then(() => toast("Lien Discord copié"), () => toast("Copie impossible")));
+      act("Ouvrir Discord", "mon profil ↗", "discord message ecrire contact", () => window.open(CONFIG.discord, "_blank", "noopener"), "↗");
+      act("Ouvrir mon GitHub", "github.com/" + CONFIG.github + " ↗", "github profil code depots", () => window.open("https://github.com/" + CONFIG.github, "_blank", "noopener"), "↗");
+      act("Copier le lien de cette section", "#" + panels[cur].id, "partager url ancre lien", () => copyText(shareUrl(cur)).then(() => toast("Lien de la section copié"), () => toast("Copie impossible")));
+      if (navigator.share) act("Partager le site", "envoyer à quelqu'un", "partager envoyer", () => navigator.share({ title: document.title, url: shareUrl(cur) }).catch(() => {}));
+      if (app.mode3d && app.tour) act(app.tour.active() ? "Arrêter la visite automatique" : "Lancer la visite automatique", "défile toutes les sections", "visite tour auto demo presentation", () => (app.tour.active() ? app.tour.stop() : app.tour.start()), "▶");
+      act("Imprimer / enregistrer en PDF", "mise en page propre", "imprimer pdf cv export", () => window.print(), "⎙");
+      if (!reduce) {
+        [["max", "Qualité maximale", "3D, WebGL et tous les effets"], ["eco", "Mode éco", "3D allégée, sans WebGL"], ["flat", "Version simple", "page à plat, sans animation"]]
+          .forEach((m) => c.push({ g: "Affichage", ic: "◐", t: m[1], d: m[2], k: "qualite performance fluide lent batterie " + m[0], on: fx === m[0], run: () => setFx(m[0]) }));
+      }
+      THEMES.forEach((th) => c.push({ g: "Affichage", ic: "●", t: "Accent " + th[1], d: "couleur du thème", k: "couleur theme accent " + th[0], on: accent === th[0], run: () => setAccent(th[0]) }));
+      repoAll.forEach((r, i) => c.push({ g: "Projets", ic: "↗", t: r.name, d: [r.language, r.description].filter(Boolean).join(" · "), k: "projet depot github repo", top: i < 5, run: () => window.open(r.html_url, "_blank", "noopener") }));
+      return c;
+    }
+
+    function score(c, q) {
+      if (!q.length) return 1;
+      const t = norm(c.t), h = c.h || (c.h = norm(c.t + " " + c.d + " " + c.k + " " + c.g));
+      let s = 0;
+      for (const w of q) { if (h.indexOf(w) < 0) return 0; s += t.indexOf(w) === 0 ? 3 : t.indexOf(w) > 0 ? 2 : 1; }
+      return s;
+    }
+
+    function render() {
+      const q = norm(input.value).split(/\s+/).filter(Boolean);
+      let rows = all.map((c) => ({ c, s: score(c, q) })).filter((r) => r.s > 0);
+      if (q.length) rows.sort((a, b) => b.s - a.s);
+      else rows = rows.filter((r) => r.c.g !== "Projets" || r.c.top);
+      shown = rows.map((r) => r.c);
+      list.textContent = "";
+      if (!shown.length) {
+        const li = document.createElement("li");
+        li.className = "pal-empty"; li.setAttribute("role", "presentation"); li.textContent = "Aucun résultat";
+        list.appendChild(li); setAct(0); return;
+      }
+      let lastG = "";
+      shown.forEach((c, i) => {
+        if (!q.length && c.g !== lastG) {
+          lastG = c.g;
+          const h = document.createElement("li");
+          h.className = "pal-h"; h.setAttribute("role", "presentation"); h.textContent = c.g; list.appendChild(h);
+        }
+        const li = document.createElement("li"), g = document.createElement("span"), t = document.createElement("span"), d = document.createElement("span");
+        li.className = "pal-o" + (c.on ? " on" : ""); li.id = "pal-o" + i; li.dataset.i = i; li.setAttribute("role", "option");
+        g.className = "g"; g.textContent = c.ic; g.setAttribute("aria-hidden", "true");
+        t.className = "t"; t.textContent = c.t;
+        d.className = "d"; d.textContent = q.length ? [c.g, c.d].filter(Boolean).join(" · ") : c.d || "";
+        li.append(g, t, d);
+        if (c.key) { const k = document.createElement("span"); k.className = "k"; k.textContent = c.key; k.setAttribute("aria-hidden", "true"); li.appendChild(k); }
+        list.appendChild(li);
+      });
+      setAct(act);
+    }
+
+    function setAct(i) {
+      act = shown.length ? (i + shown.length) % shown.length : 0;
+      let cur = null;
+      $$(".pal-o", list).forEach((li) => {
+        const on = +li.dataset.i === act;
+        li.setAttribute("aria-selected", String(on));
+        if (on) cur = li;
+      });
+      input.setAttribute("aria-activedescendant", cur ? cur.id : "");
+      if (!cur) return;
+      if (act === 0) list.scrollTop = 0;
+      else if (cur.offsetTop < list.scrollTop) list.scrollTop = cur.offsetTop - 6;
+      else if (cur.offsetTop + cur.offsetHeight > list.scrollTop + list.clientHeight) list.scrollTop = cur.offsetTop + cur.offsetHeight - list.clientHeight + 6;
+    }
+
+    function open(prefill) {
+      if (pal.open) return;
+      if (app.tour) app.tour.stop();
+      all = commands(); input.value = prefill || ""; act = 0;
+      render();
+      root.classList.add("pal-open");
+      pal.showModal();
+      list.scrollTop = 0;
+      if (coarse) box.focus({ preventScroll: true }); else { input.focus(); input.select(); }
+    }
+    function exec(c) { if (!c) return; pal.close(); c.run(); }
+
+    input.addEventListener("input", () => { act = 0; render(); });
+    pal.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowDown") { e.preventDefault(); setAct(act + 1); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); setAct(act - 1); }
+      else if (e.key === "Enter" && e.target === input) { e.preventDefault(); exec(shown[act]); }
+      else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") { e.preventDefault(); pal.close(); }
+    });
+    list.addEventListener("mousemove", (e) => { const li = e.target.closest(".pal-o"); if (li && +li.dataset.i !== act) setAct(+li.dataset.i); });
+    list.addEventListener("click", (e) => { const li = e.target.closest(".pal-o"); if (li) exec(shown[+li.dataset.i]); });
+    $("#pal-close").addEventListener("click", () => pal.close());
+    pal.addEventListener("click", (e) => { if (e.target === pal) pal.close(); });
+    pal.addEventListener("close", () => root.classList.remove("pal-open"));
+    return { open, isOpen: () => pal.open };
+  }
+  const palette = initPalette();
+
+  /* ------------------------------------------------------------------ */
+  /* Qualité et accent                                                   */
+  /* ------------------------------------------------------------------ */
+  function setFx(mode, opts) {
+    if (mode === fx) return;
+    const prev = fx;
+    fx = mode; store.set("fx", mode);
+    if (mode === "flat" || prev === "flat") { location.reload(); return; }
+    root.classList.toggle("eco", mode === "eco");
+    if (app.applyFx) app.applyFx(mode);
+    if (!(opts && opts.auto)) toast(mode === "eco" ? "Mode éco activé" : "Qualité maximale activée");
+  }
+  function setAccent(id) {
+    accent = id; root.setAttribute("data-accent", id); store.set("accent", id);
+    if (app.applyAccent) app.applyAccent();
+    const th = THEMES.filter((t) => t[0] === id)[0];
+    toast("Accent " + (th ? th[1] : id));
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Navigation commune (à plat) et raccourcis clavier                   */
+  /* ------------------------------------------------------------------ */
+  function flatCur() {
+    let b = 0;
+    panels.forEach((p, i) => { if (p.getBoundingClientRect().top < innerHeight * 0.45) b = i; });
+    return b;
+  }
+  function flatGo(i) {
+    i = clamp(i, 0, N - 1);
+    panels[i].scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+    try { history.replaceState(null, "", "#" + panels[i].id); } catch (e) {}
+  }
+  app.go = flatGo; app.cur = flatCur; app.step = (d) => flatGo(flatCur() + d);
+
+  document.addEventListener("click", (e) => {
+    const t = e.target.closest && e.target.closest("[data-go]");
+    if (!t) return;
+    e.preventDefault();
+    app.go(+t.dataset.go);
+  });
+
+  addEventListener("keydown", (e) => {
+    if (e.defaultPrevented || e.altKey || palette.isOpen()) return;
+    const typing = e.target.closest && e.target.closest("input, textarea, select, [contenteditable]");
+    const k = e.key || "";
+    if ((e.ctrlKey || e.metaKey) && !e.shiftKey && k.toLowerCase() === "k") { e.preventDefault(); palette.open(); return; }
+    if (e.ctrlKey || e.metaKey || typing) return;
+    if (k === "/" || k === "?") { e.preventDefault(); palette.open(); return; }
+    const m = /^(?:Digit|Numpad)([1-9])$/.exec(e.code || "");   // e.code : marche aussi en AZERTY
+    if (m && +m[1] <= N) { e.preventDefault(); app.go(+m[1] - 1); }
+    else if (k === "ArrowRight") { e.preventDefault(); app.step(1); }
+    else if (k === "ArrowLeft") { e.preventDefault(); app.step(-1); }
+  });
+
+  /* impression : tout déplier, valeurs finales */
+  let reopened = [];
+  addEventListener("beforeprint", () => {
+    reopened = $$("details:not([open])"); reopened.forEach((d) => (d.open = true));
+    $$("[data-val]").forEach((b) => { b.textContent = b.dataset.val; delete b.dataset.wait; });
+  });
+  addEventListener("afterprint", () => { reopened.forEach((d) => (d.open = false)); reopened = []; });
+
+  /* ------------------------------------------------------------------ */
   /* Mode 3D                                                             */
   /* ------------------------------------------------------------------ */
-  if (reduce || !(window.CSS && CSS.supports && CSS.supports("transform-style", "preserve-3d"))) return;
+  const progress = $("#progress i");
+  if (reduce || fx === "flat" || !(window.CSS && CSS.supports && CSS.supports("transform-style", "preserve-3d"))) {
+    if (progress) {                                           // à plat : la progression suit le défilement
+      const upd = () => {
+        const m = root.scrollHeight - innerHeight;
+        progress.style.transform = "scaleX(" + (m > 0 ? clamp(scrollY / m, 0, 1) : 0).toFixed(4) + ")";
+      };
+      addEventListener("scroll", upd, { passive: true }); addEventListener("resize", upd); upd();
+    }
+    return;
+  }
 
   const P = 1200;        // perspective CSS (px) : la caméra est P px derrière le plan z = 0
   const GAP = 1500;      // distance entre deux panneaux (px)
@@ -84,52 +354,122 @@
   const U = 100;         // 1 unité three.js = 100 px CSS
 
   const scene = $("#scene"), spacer = $("#spacer"), hud = $("#hud"), dotsEl = $("#dots");
-  const items = $$(".panel").map((el, i) => ({
+  const pager = $("#pager"), nextBtn = $("#next"), prevBtn = $("#prev"), warp = $("#warp");
+  const nextLabel = $(".next-label", nextBtn);
+  const items = panels.map((el, i) => ({
     el, card: $(".card", el), id: el.id, title: el.dataset.title || el.id,
-    side: +el.dataset.side || 0, x: 0, z: -i * GAP, ry: 0, q: -1, tilt: false,
+    side: +el.dataset.side || 0, x: 0, z: -i * GAP, ry: 0, q: -1, tilt: false, shown: false,
   }));
-  const N = items.length;
   let W = innerWidth, H = innerHeight, wide = W >= 900, range = 1;
   let target = 0, ps = 0;                 // progression de défilement brute / lissée (0..1)
-  const mouse = { x: 0, y: 0, sx: 0, sy: 0 };
-  const fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
+  let eco = fx === "eco";
+  const mouse = { x: 0, y: 0, sx: 0, sy: 0, px: 0, py: 0, moved: false };
 
   /* --- navigation : pastilles ------------------------------------------ */
   items.forEach((it, i) => {
     const b = document.createElement("button");
-    b.type = "button"; b.dataset.go = i; b.setAttribute("aria-label", it.title); b.title = it.title;
+    b.type = "button"; b.dataset.go = i; b.setAttribute("aria-label", it.title);
     dotsEl.appendChild(b);
   });
   const navLinks = $$("#menu a");
   const dotBtns = $$("button", dotsEl);
 
-  function goTo(i, instant) {
-    i = clamp(i, 0, N - 1);
-    const top = (range * i) / (N - 1);
-    window.scrollTo({ top, behavior: instant || !("scrollBehavior" in root.style) ? "auto" : "smooth" });
+  /* --- trajectoire de la caméra : arrêt devant chaque panneau, vol entre eux --- */
+  const ease = (t) => smooth((t - 0.2) / 0.6);
+  function camAt(f) {
+    f = clamp(f, 0, N - 1);
+    const i = Math.min(N - 2, Math.floor(f)), e = ease(f - i);
+    const a = items[i], b = items[i + 1];
+    return {
+      x: (a.x + (b.x - a.x) * e) * 0.85,
+      y: Math.sin(e * Math.PI) * -26,
+      z: a.z + (b.z - a.z) * e + DWELL,
+    };
   }
-  document.addEventListener("click", (e) => {
-    const t = e.target.closest && e.target.closest("[data-go]");
-    if (!t) return;
-    e.preventDefault();
-    goTo(+t.dataset.go);
+  /* Entre le défilement f et la position réelle de la caméra g, il y a des paliers d'arrêt.
+     gOf : f → g ; fOf : g → f. Les vols (bouton, menu, flèches) avancent en g : le mouvement
+     démarre tout de suite et ne s'arrête pas à chaque panneau traversé. */
+  const sInv = (y) => 0.5 - Math.sin(Math.asin(1 - 2 * clamp(y, 0, 1)) / 3);
+  function gOf(f) { f = clamp(f, 0, N - 1); const i = Math.min(N - 2, Math.floor(f)); return i + ease(f - i); }
+  function fOf(g) { g = clamp(g, 0, N - 1); const i = Math.min(N - 2, Math.floor(g)); return i + 0.2 + 0.6 * sInv(g - i); }
+
+  /* --- vol animé vers un panneau (le défilement réel suit : l'animation au scroll est conservée) --- */
+  let fly = null;                         // { g0, g1, i, t0, dur }
+  function goTo(i, instant) {
+    i = clamp(Math.round(i), 0, N - 1);
+    const g0 = gOf(ps * (N - 1)), dist = Math.abs(i - g0), y = (range * i) / (N - 1);
+    if (instant || dist < 0.002) {
+      fly = null;
+      window.scrollTo(0, y); target = clamp(y / range, 0, 1);
+      if (instant) ps = target;
+      return;
+    }
+    fly = { g0, g1: i, i, t0: performance.now(), dur: clamp(950 + 330 * dist, 1000, 2700) };
+  }
+  function stepFly(now) {
+    if (!fly) return;
+    const k = clamp((now - fly.t0) / fly.dur, 0, 1);
+    const e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;      // easeInOutCubic
+    const f = k >= 1 ? fly.i : fOf(fly.g0 + (fly.g1 - fly.g0) * e);
+    ps = target = clamp(f / (N - 1), 0, 1);
+    window.scrollTo(0, ps * range);
+    if (k >= 1) fly = null;
+  }
+  /* panneau suivant (+1) ou précédent (-1) par rapport à la caméra ; peut sortir de [0, N-1] */
+  function stepIndex(dir) {
+    if (fly) return fly.i + dir;
+    const g = gOf(ps * (N - 1));
+    return dir > 0 ? Math.floor(g + 0.03) + 1 : Math.ceil(g - 0.03) - 1;
+  }
+  app.go = goTo;
+  app.cur = () => (fly ? fly.i : clamp(Math.round(ps * (N - 1)), 0, N - 1));
+  app.step = (d) => goTo(clamp(stepIndex(d), 0, N - 1));
+
+  nextBtn.addEventListener("click", () => { const c = stepIndex(1); goTo(c >= N ? 0 : c); });
+  prevBtn.addEventListener("click", () => goTo(Math.max(0, stepIndex(-1))));
+
+  /* visite automatique */
+  let tourT = 0, tourAt = 0;
+  const tour = {
+    active: () => !!tourT,
+    stop() { if (tourT) { clearInterval(tourT); tourT = 0; } },
+    start() {
+      tour.stop(); tourAt = performance.now();
+      const advance = () => {
+        const c = stepIndex(1);
+        if (c >= N) { tour.stop(); toast("Visite terminée"); return false; }
+        goTo(c); return true;
+      };
+      toast("Visite automatique · touche l'écran ou une touche pour arrêter");
+      const first = stepIndex(1);
+      if (first >= N) goTo(0); else goTo(first);
+      tourT = setInterval(advance, 6200);
+    },
+  };
+  app.tour = tour;
+
+  /* l'utilisateur reprend la main : on annule le vol et la visite */
+  const SCROLL_KEYS = ["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End"];
+  const takeOver = () => { fly = null; if (performance.now() - tourAt > 150) tour.stop(); };
+  addEventListener("wheel", takeOver, { passive: true });
+  addEventListener("touchstart", (e) => { if (e.target.closest && e.target.closest(".pager, [data-go], .toasts, .pal")) return; takeOver(); }, { passive: true });
+  addEventListener("keydown", (e) => {
+    if (performance.now() - tourAt > 150) tour.stop();
+    const onControl = e.target.closest && e.target.closest("button, a, summary, input, textarea, select");
+    if (SCROLL_KEYS.indexOf(e.key) >= 0 || (e.key === " " && !onControl)) fly = null;
   });
+  document.addEventListener("pointerdown", (e) => { if (!(e.target.closest && e.target.closest(".pal"))) { if (performance.now() - tourAt > 150) tour.stop(); } });
+
   document.addEventListener("focusin", (e) => {   // Tab vers un panneau : la caméra y va
     const p = e.target.closest && e.target.closest(".panel");
     if (!p) return;
     const i = items.findIndex((it) => it.el === p);
-    if (i >= 0 && Math.abs(i - ps * (N - 1)) > 0.6) goTo(i);
-  });
-  addEventListener("keydown", (e) => {
-    if (e.altKey || e.ctrlKey || e.metaKey) return;
-    if (e.target.closest && e.target.closest("input, textarea, select, [contenteditable]")) return;
-    const f = Math.round(ps * (N - 1));
-    if (e.key === "ArrowRight") { e.preventDefault(); goTo(f + 1); }
-    else if (e.key === "ArrowLeft") { e.preventDefault(); goTo(f - 1); }
+    if (i >= 0 && Math.abs(i - (fly ? fly.i : gOf(ps * (N - 1)))) > 0.6) goTo(i);
   });
   addEventListener("scroll", () => { target = clamp(scrollY / range, 0, 1); }, { passive: true });
   addEventListener("pointermove", (e) => {
     mouse.x = (e.clientX / W - 0.5) * 2; mouse.y = (e.clientY / H - 0.5) * 2;
+    mouse.px = e.clientX; mouse.py = e.clientY; mouse.moved = true;
   }, { passive: true });
 
   /* --- mise en place ---------------------------------------------------- */
@@ -145,17 +485,18 @@
     target = clamp(scrollY / range, 0, 1);
   }
 
-  /* --- trajectoire de la caméra : arrêt devant chaque panneau, vol entre eux --- */
-  const ease = (t) => smooth((t - 0.2) / 0.6);
-  function camAt(f) {
-    f = clamp(f, 0, N - 1);
-    const i = Math.min(N - 2, Math.floor(f)), e = ease(f - i);
-    const a = items[i], b = items[i + 1];
-    return {
-      x: (a.x + (b.x - a.x) * e) * 0.85,
-      y: Math.sin(e * Math.PI) * -26,
-      z: a.z + (b.z - a.z) * e + DWELL,
-    };
+  /* --- compteurs animés (statistiques) ------------------------------------ */
+  $$(".stats b").forEach((b) => {
+    const v = parseInt(b.dataset.val || b.textContent, 10);
+    if (isFinite(v)) { b.dataset.val = String(v); b.dataset.wait = "1"; b.textContent = "0"; }
+  });
+  function countUp(el) {
+    const t0 = performance.now();
+    (function tick(now) {
+      const k = clamp((now - t0) / 1100, 0, 1), to = parseInt(el.dataset.val, 10) || 0;
+      el.textContent = String(Math.round(to * (1 - Math.pow(1 - k, 3))));
+      if (k < 1) requestAnimationFrame(tick); else delete el.dataset.wait;
+    })(t0);
   }
 
   /* ------------------------------------------------------------------ */
@@ -178,6 +519,9 @@
       cam.updateProjectionMatrix();
     }
     size();
+
+    const css = (v) => getComputedStyle(root).getPropertyValue(v).trim() || "#ffffff";
+    const rgb = (hex) => { const c = new THREE.Color(hex); return [c.r, c.g, c.b]; };
 
     const dot = (function () {
       const c = document.createElement("canvas"); c.width = c.height = 64;
@@ -202,14 +546,16 @@
     }
     [[-HX, -HY], [HX, -HY], [HX, HY], [-HX, HY]].forEach((c) => fp.push(c[0], c[1], 15, c[0], c[1], -140));
     const fg = new THREE.BufferGeometry(); fg.setAttribute("position", new THREE.Float32BufferAttribute(fp, 3));
-    sc.add(new THREE.LineSegments(fg, new THREE.LineBasicMaterial({ color: 0xbb9af7, transparent: true, opacity: 0.16, blending: ADD, depthWrite: false })));
+    const frameMat = new THREE.LineBasicMaterial({ color: css("--accent"), transparent: true, opacity: 0.16, blending: ADD, depthWrite: false });
+    sc.add(new THREE.LineSegments(fg, frameMat));
 
     /* sol en perspective */
     const gp = [], FY = -5.2;
     for (let x = -33; x <= 33; x += 3) gp.push(x, FY, 15, x, FY, -140);
     for (let z = 15; z >= -140; z -= 3) gp.push(-33, FY, z, 33, FY, z);
     const gg = new THREE.BufferGeometry(); gg.setAttribute("position", new THREE.Float32BufferAttribute(gp, 3));
-    sc.add(new THREE.LineSegments(gg, new THREE.LineBasicMaterial({ color: 0x7dcfff, transparent: true, opacity: 0.1, blending: ADD, depthWrite: false })));
+    const floorMat = new THREE.LineBasicMaterial({ color: css("--cyan"), transparent: true, opacity: 0.1, blending: ADD, depthWrite: false });
+    sc.add(new THREE.LineSegments(gg, floorMat));
 
     /* polytopes 4D réguliers */
     function edgesOf(V) {
@@ -229,7 +575,7 @@
     const DEFS = [A, B, C, D5].map((V) => { const v = unit(V); return { V: v, E: edgesOf(v) }; });
     const TYPES = [0, 1, 2, 3, 0, 1, 2, 0];
     const KSC = 6.5, DW = 2.6;
-    const COL = [[0.49, 0.81, 1.0], [0.73, 0.6, 0.97], [0.54, 0.17, 0.89]];
+    const COL = [rgb(css("--cyan")), rgb(css("--accent")), rgb(css("--deep"))];   // dégradé selon la coordonnée w
     function colorAt(w) {
       const t = clamp((w * 1.2 + 1.2) / 2.4, 0, 1), a = t < 0.5 ? COL[0] : COL[1], b = t < 0.5 ? COL[1] : COL[2], k = t < 0.5 ? t * 2 : (t - 0.5) * 2;
       return [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k];
@@ -261,6 +607,12 @@
     }
     placePolys();
 
+    /* couleurs du thème (lues dans le CSS : --accent, --cyan, --deep) */
+    function theme() {
+      frameMat.color.set(css("--accent")); floorMat.color.set(css("--cyan"));
+      COL[0] = rgb(css("--cyan")); COL[1] = rgb(css("--accent")); COL[2] = rgb(css("--deep"));
+    }
+
     function updatePoly(p, time, f) {
       const V = p.def.V, R = p.R, E = p.def.E;
       const xw = time * 0.55 + p.phase, yw = time * 0.38 + f * 1.1 + p.phase * 0.7, zw = f * 1.6, xy = time * 0.17, xz = time * 0.11 + p.phase, yz = f * 0.5;
@@ -284,7 +636,7 @@
     }
 
     return {
-      size, placePolys,
+      size, placePolys, theme,
       render(cx, cy, cz, f, time) {
         cam.position.set(cx / U, -cy / U, (cz + P) / U);
         const eyeZ = cam.position.z;
@@ -300,25 +652,41 @@
       },
     };
   }
-  const gl = initGL();
+  let gl = null, glTried = false;
+  function ensureGL() { if (!glTried) { glTried = true; gl = initGL(); } return gl; }   // créé à la demande (pas en mode éco)
+  if (!eco) ensureGL();
+
+  app.applyFx = (mode) => {
+    eco = mode === "eco"; perf.on = false;
+    if (!eco && ensureGL()) { gl.size(); gl.placePolys(); gl.theme(); }
+  };
+  app.applyAccent = () => { if (gl) gl.theme(); };
 
   /* ------------------------------------------------------------------ */
   /* Boucle                                                              */
   /* ------------------------------------------------------------------ */
-  let last = performance.now(), time = 0, intro = 0, hudT = 0, running = true, curIdx = -1, hashT = 0;
+  let last = performance.now(), time = 0, intro = 0, hudT = 0, raf = 0, curIdx = -1, hashT = 0;
+  let lastCz = 0, wv = 0, wShown = -1, pShown = "";
+  const perf = { on: fx === "max" && !fxChosen, n: 0, sum: 0, slow: 0, wins: 0 };   // repli automatique si l'animation rame
 
   function setCurrent(i) {
     if (i === curIdx) return;
     curIdx = i;
     navLinks.forEach((a) => a.setAttribute("aria-current", String(+a.dataset.go === i)));
     dotBtns.forEach((b, k) => b.setAttribute("aria-current", String(k === i)));
+    const lastOne = i === N - 1;
+    prevBtn.dataset.off = i === 0 ? "1" : "";
+    nextBtn.dataset.idx = String(i); nextBtn.dataset.last = String(lastOne);
+    nextLabel.textContent = lastOne ? "Retour au début" : "Suivant";
+    nextBtn.setAttribute("aria-label", lastOne ? "Retour au début" : "Suivant : " + items[i + 1].title);
     clearTimeout(hashT);
     hashT = setTimeout(() => { try { history.replaceState(null, "", "#" + items[i].id); } catch (e) {} }, 400);
   }
 
   function frame(now) {
-    if (!running) return;
-    const dt = Math.min(0.05, (now - last) / 1000); last = now; time += dt;
+    const raw = (now - last) / 1000, dt = Math.min(0.05, raw);
+    last = now; time += dt;
+    stepFly(now);
     intro = Math.min(1, intro + dt / 1.8);
     ps += (target - ps) * (1 - Math.exp(-dt * 7));
     mouse.sx += (mouse.x - mouse.sx) * (1 - Math.exp(-dt * 4));
@@ -329,12 +697,22 @@
     const cz = c.z + (1 - smooth(intro)) * 1800;
     scene.style.transform = `translate3d(${(-cx).toFixed(2)}px, ${(-cy).toFixed(2)}px, ${(-cz).toFixed(2)}px)`;
 
+    /* lignes de vitesse : l'opacité suit la vitesse de la caméra */
+    if (!eco) {
+      const vz = Math.abs(cz - lastCz) / Math.max(dt, 0.001);
+      wv += (clamp((vz - 700) / 2600, 0, 1) * 0.55 - wv) * (1 - Math.exp(-dt * 9));
+      const wq = Math.round(wv * 50) / 50;
+      if (wq !== wShown) { wShown = wq; warp.style.opacity = wq ? String(wq) : ""; }
+    }
+    lastCz = cz;
+
     const idx = clamp(Math.round(f), 0, N - 1);
     for (let i = 0; i < N; i++) {
       const it = items[i], dz = it.z - cz;
       let vis, blur;
       if (dz <= -DWELL) { vis = Math.pow(clamp(1 - (-dz - DWELL) / 2200, 0, 1), 2); blur = clamp((-dz - DWELL - 80) / 300, 0, 5); }
       else { vis = 1 - smooth((dz + DWELL) / 560); blur = clamp((dz + DWELL) / 90, 0, 9); }
+      if (eco) blur = 0;
       const q = Math.round(vis * 100) / 100, bl = Math.round(blur * 2) / 2;
       const key = q + "|" + bl;
       if (key !== it.key) {
@@ -343,11 +721,27 @@
         it.el.style.filter = bl > 0.4 ? `blur(${bl}px)` : "";
         it.el.style.pointerEvents = q > 0.5 ? "" : "none";
       }
-      const tilt = fine && wide && i === idx && q > 0.9;
+      if (q > 0.35 && !it.shown) { it.shown = true; $$("[data-wait]", it.el).forEach(countUp); }
+      const tilt = fine && wide && !eco && i === idx && q > 0.9;
       if (tilt) { it.card.style.transform = `rotateX(${(-mouse.sy * 3).toFixed(2)}deg) rotateY(${(mouse.sx * 5).toFixed(2)}deg)`; it.tilt = true; }
       else if (it.tilt) { it.card.style.transform = ""; it.tilt = false; }
     }
     setCurrent(idx);
+
+    /* halo qui suit le curseur sur le panneau courant */
+    if (mouse.moved) {
+      mouse.moved = false;
+      if (fine && wide && !eco) {
+        const card = items[idx].card, r = card.getBoundingClientRect();
+        card.style.setProperty("--mx", (mouse.px - r.left).toFixed(0) + "px");
+        card.style.setProperty("--my", (mouse.py - r.top).toFixed(0) + "px");
+      }
+    }
+
+    if (progress) {
+      const pv = ps.toFixed(4);
+      if (pv !== pShown) { pShown = pv; progress.style.transform = "scaleX(" + pv + ")"; }
+    }
 
     hudT += dt;
     if (hudT > 0.08) {
@@ -355,21 +749,39 @@
       hud.textContent = `${String(idx + 1).padStart(2, "0")}/${String(N).padStart(2, "0")} · ${items[idx].title.toUpperCase()} · Z ${String(Math.max(0, Math.round(DWELL - cz))).padStart(5, "0")}`;
     }
 
-    if (gl) gl.render(cx, cy, cz, f, time);
-    requestAnimationFrame(frame);
+    if (gl && !eco) gl.render(cx, cy, cz, f, time);
+
+    /* repli automatique en mode éco si la fluidité reste sous ~24 images/s */
+    if (perf.on && intro >= 1 && raw < 0.25) {
+      perf.sum += raw;
+      if (++perf.n >= 80) {
+        if (perf.sum / perf.n > 1 / 24) { if (++perf.slow >= 2) { perf.on = false; autoEco(); } } else perf.slow = 0;
+        perf.n = 0; perf.sum = 0;
+        if (++perf.wins > 12) perf.on = false;
+      }
+    }
   }
+  function autoEco() {
+    setFx("eco", { auto: true });
+    toast("Animation allégée pour rester fluide.", { label: "Annuler", run: () => setFx("max") });
+  }
+  function tick(now) { raf = requestAnimationFrame(tick); frame(now); }
 
   layout();
   const h0 = location.hash.slice(1), i0 = items.findIndex((it) => it.id === h0);
   if (i0 > 0) { scrollTo(0, (range * i0) / (N - 1)); target = ps = clamp(scrollY / range, 0, 1); }
   else { ps = target; }
   root.classList.add("fly");
+  root.classList.toggle("eco", eco);
+  pager.hidden = false;
+  app.mode3d = true;
 
   addEventListener("resize", () => { layout(); if (gl) { gl.size(); gl.placePolys(); } });
+  let hiddenAt = 0;
   document.addEventListener("visibilitychange", () => {
-    running = !document.hidden;
-    if (running) { last = performance.now(); requestAnimationFrame(frame); }
+    if (document.hidden) { hiddenAt = performance.now(); cancelAnimationFrame(raf); tour.stop(); }
+    else { last = performance.now(); if (fly) fly.t0 += last - hiddenAt; cancelAnimationFrame(raf); raf = requestAnimationFrame(tick); }
   });
-  requestAnimationFrame(frame);
-  window.__tour = { goTo, ready: true, count: N };
+  raf = requestAnimationFrame(tick);
+  window.__tour = { goTo, ready: true, count: N, state: () => ({ fly: !!fly, ps, idx: curIdx, eco, fx }) };
 })();

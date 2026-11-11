@@ -7,15 +7,29 @@
   --accent: #bb9af7;
   --on-accent: #16161e;
   --cyan: #7dcfff;
+  --deep: #8a2be2;
   --display: "Bricolage Grotesque", system-ui, sans-serif;
   --body: "Literata", Georgia, serif;
   --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
   --bar: 3.4rem;
   color-scheme: dark;
 }
+/* accents : --accent (principal), --cyan (secondaire), --deep (3e couleur des polytopes) */
+html[data-accent="cyan"]  { --accent: #7dcfff; --cyan: #bb9af7; --deep: #7aa2f7; }
+html[data-accent="vert"]  { --accent: #9ece6a; --cyan: #73daca; --deep: #e0af68; }
+html[data-accent="ambre"] { --accent: #e0af68; --cyan: #ff9e64; --deep: #f7768e; }
+html[data-accent="rose"]  { --accent: #f7768e; --cyan: #7aa2f7; --deep: #bb9af7; }
+
 *, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html { background: var(--bg); -webkit-text-size-adjust: 100%; }
 body { margin: 0; background: var(--bg); color: var(--text); font: 1.0625rem/1.65 var(--body); overflow-x: hidden; }
+html.pal-open { overflow: hidden; }
+
+/* aucune barre de défilement visible (le défilement reste actif : molette, tactile, clavier) */
+html { scrollbar-width: none; -ms-overflow-style: none; }
+* { scrollbar-width: none; }
+::-webkit-scrollbar, html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; width: 0; height: 0; }
 a { color: var(--accent); text-underline-offset: 0.2em; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .skip { position: fixed; left: 1rem; top: -4rem; z-index: 100; background: var(--accent); color: var(--on-accent); padding: 0.5rem 0.9rem; border-radius: 6px; }
@@ -24,21 +38,40 @@ a { color: var(--accent); text-underline-offset: 0.2em; }
 /* barre */
 .bar { position: fixed; top: 0; left: 0; right: 0; z-index: 50; height: var(--bar); display: flex; align-items: center; gap: 1.2rem; padding-inline: max(1rem, env(safe-area-inset-left)) max(1rem, env(safe-area-inset-right)); padding-top: env(safe-area-inset-top, 0px); background: color-mix(in srgb, var(--bg) 78%, transparent); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
 .brand { font: 800 1.1rem/1 var(--display); letter-spacing: -0.02em; color: var(--text); text-decoration: none; flex: none; }
-.bar nav { min-width: 0; margin-left: auto; overflow-x: auto; scrollbar-width: none; }
-.bar nav::-webkit-scrollbar { display: none; }
+.bar nav { min-width: 0; margin-left: auto; overflow-x: auto; }
 .bar ul { display: flex; gap: 1.2rem; margin: 0; padding: 0; list-style: none; font: 500 0.92rem/1 var(--display); white-space: nowrap; }
 .bar ul a { color: var(--muted); text-decoration: none; padding-block: 0.5rem; border-bottom: 2px solid transparent; }
 .bar ul a:hover { color: var(--text); }
 .bar ul a[aria-current="true"] { color: var(--text); border-color: var(--accent); }
 
+/* barre : bouton menu + progression du vol */
+.kbtn { flex: none; display: inline-flex; align-items: center; gap: 0.5rem; height: 2.2rem; padding: 0 0.7rem; border: 1px solid var(--line); border-radius: 6px; background: color-mix(in srgb, var(--surface) 70%, transparent); color: var(--muted); font: 500 0.8rem/1 var(--display); cursor: pointer; transition: color 0.2s, border-color 0.2s, background 0.2s; }
+.kbtn svg { width: 1.05rem; height: 1.05rem; flex: none; }
+.kbtn kbd { padding: 0.2rem 0.38rem; border: 1px solid var(--line); border-radius: 4px; font: 500 0.66rem/1 var(--mono); color: var(--muted); }
+.kbtn:hover, .kbtn:focus-visible { color: var(--text); border-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.progress { position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; pointer-events: none; }
+.progress i { display: block; width: 100%; height: 100%; transform-origin: 0 50%; transform: scaleX(0); background: linear-gradient(90deg, var(--cyan), var(--accent)); box-shadow: 0 0 10px var(--accent); }
+
 /* monde 3D */
 #world { position: fixed; inset: 0; overflow: hidden; overflow: clip; perspective: 1200px; perspective-origin: 50% 50%; z-index: 1; }
 #gl { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+/* lignes de vitesse : visibles seulement quand la caméra file (opacité pilotée par le JS) */
+.warp { position: absolute; inset: -22%; z-index: 2; pointer-events: none; opacity: 0; will-change: opacity;
+  background:
+    repeating-conic-gradient(from 0deg at 50% 50%, transparent 0deg 3.1deg, color-mix(in srgb, var(--accent) 55%, transparent) 3.3deg 3.55deg, transparent 3.75deg 6.4deg),
+    repeating-conic-gradient(from 1.7deg at 50% 50%, transparent 0deg 5.2deg, color-mix(in srgb, var(--cyan) 45%, transparent) 5.4deg 5.6deg, transparent 5.8deg 9.1deg);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 50%, transparent 24%, #000 78%);
+  mask-image: radial-gradient(ellipse at 50% 50%, transparent 24%, #000 78%);
+  animation: warpSpin 60s linear infinite; }
+@keyframes warpSpin { to { transform: rotate(360deg); } }
 #scene { position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform-style: preserve-3d; z-index: 1; }
 #spacer { height: 100vh; }
 
 .panel { --w: min(58rem, 92vw); position: absolute; left: 0; top: 0; width: 0; height: 0; transform-style: preserve-3d; }
-.card { position: absolute; left: calc(var(--w) / -2); top: 0; width: var(--w); translate: 0 -50%; transform-style: preserve-3d; padding: clamp(1.2rem, 3vw, 2.2rem); background: color-mix(in srgb, var(--bg) 86%, transparent); border: 1px solid var(--line); border-radius: 4px; box-shadow: 0 0 0 1px rgba(187, 154, 247, 0.05), 0 30px 80px rgba(0, 0, 0, 0.45), inset 0 0 60px rgba(125, 207, 255, 0.03); }
+.card { position: absolute; left: calc(var(--w) / -2); top: 0; width: var(--w); translate: 0 -50%; transform-style: preserve-3d; padding: clamp(1.2rem, 3vw, 2.2rem);
+  background: radial-gradient(30rem circle at var(--mx, 50%) var(--my, -25%), color-mix(in srgb, var(--accent) 12%, transparent), transparent 62%), color-mix(in srgb, var(--bg) 86%, transparent);
+  border: 1px solid var(--line); border-radius: 4px;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 6%, transparent), 0 30px 80px rgba(0, 0, 0, 0.45), inset 0 0 60px color-mix(in srgb, var(--cyan) 4%, transparent); }
 .card::before, .card::after { content: ""; position: absolute; width: 1.3rem; height: 1.3rem; border: 2px solid var(--accent); pointer-events: none; transform: translateZ(24px); }
 .card::before { left: -1px; top: -1px; border-right: 0; border-bottom: 0; }
 .card::after { right: -1px; bottom: -1px; border-left: 0; border-top: 0; }
@@ -110,7 +143,9 @@ p { margin: 0; }
 
 /* pastilles de navigation */
 .dots { position: fixed; right: max(0.7rem, env(safe-area-inset-right)); top: 50%; translate: 0 -50%; z-index: 40; display: grid; gap: 0.2rem; }
-.dots button { width: 1.5rem; height: 1.5rem; padding: 0; border: 0; background: none; cursor: pointer; display: grid; place-items: center; }
+.dots button { position: relative; width: 1.5rem; height: 1.5rem; padding: 0; border: 0; background: none; cursor: pointer; display: grid; place-items: center; }
+.dots button::after { content: attr(aria-label); position: absolute; right: calc(100% + 0.45rem); top: 50%; translate: 6px -50%; padding: 0.32rem 0.55rem; border: 1px solid var(--line); border-radius: 4px; background: color-mix(in srgb, var(--bg) 90%, transparent); color: var(--text); font: 500 0.66rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.18s, translate 0.18s; }
+.dots button:hover::after, .dots button:focus-visible::after { opacity: 1; translate: 0 -50%; }
 .dots button::before { content: ""; width: 0.5rem; height: 0.5rem; border: 1.5px solid var(--muted); border-radius: 50%; transition: all 0.25s; }
 .dots button[aria-current="true"]::before { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 10px var(--accent); transform: scale(1.3); }
 .hud { position: fixed; left: max(0.8rem, env(safe-area-inset-left)); bottom: max(0.8rem, env(safe-area-inset-bottom)); z-index: 40; padding: 0.4rem 0.6rem; border: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 70%, transparent); font: 500 0.62rem/1 var(--mono); letter-spacing: 0.08em; color: var(--muted); white-space: nowrap; max-width: calc(100vw - 4rem); overflow: hidden; text-overflow: ellipsis; pointer-events: none; }

@@ -263,3 +263,6 @@ html.js:not(.fly) #scene { visibility: hidden; }
   a { color: inherit; }
   .print-only { display: block !important; margin-top: 10pt; font: 400 9pt/1.4 var(--mono); color: var(--muted); }
 }
+
+/* fin du fichier : le JS vérifie ce repère pour détecter un style.css coupé ou ancien */
+:root { --css-end: 1; }

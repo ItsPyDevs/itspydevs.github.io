@@ -29,6 +29,16 @@
     set(k, v) { try { localStorage.setItem("ipd-" + k, v); } catch (e) {} },
   };
 
+  /* garde-fou : style.css coupé pendant un téléversement, ou resté en cache dans une ancienne version */
+  if (getComputedStyle(root).getPropertyValue("--css-end").trim() !== "1") {
+    const bn = document.createElement("div");
+    bn.setAttribute("role", "alert");
+    bn.style.cssText = "position:fixed;left:0;right:0;bottom:0;z-index:999;padding:.7rem 1rem;background:#f7768e;color:#16161e;font:600 13px/1.4 system-ui,sans-serif;text-align:center";
+    bn.textContent = "style.css est incomplet ou ancien. Remplace-le par la dernière version, puis recharge sans cache.";
+    document.body.appendChild(bn);
+    root.classList.add("css-bad");
+  }
+
   const panels = $$(".panel"), N = panels.length;
   let fx = store.get("fx");                                   // qualité : max | eco | flat
   const fxChosen = fx === "max" || fx === "eco" || fx === "flat";
@@ -350,7 +360,7 @@
   const P = 1200;        // perspective CSS (px) : la caméra est P px derrière le plan z = 0
   const GAP = 1500;      // distance entre deux panneaux (px)
   const DWELL = 80;      // distance caméra-panneau à l'arrêt (px)
-  const SEG = 1.4;       // hauteurs d'écran de défilement entre deux panneaux
+  const SEG = 1.6;       // hauteurs d'écran de défilement entre deux panneaux
   const U = 100;         // 1 unité three.js = 100 px CSS
 
   const scene = $("#scene"), spacer = $("#spacer"), hud = $("#hud"), dotsEl = $("#dots");
@@ -359,7 +369,9 @@
   const items = panels.map((el, i) => ({
     el, card: $(".card", el), id: el.id, title: el.dataset.title || el.id,
     side: +el.dataset.side || 0, x: 0, z: -i * GAP, ry: 0, q: -1, tilt: false, shown: false,
+    base: "", tfm: "", w: 800, h: 600,
   }));
+  const world = $("#world");
   let W = innerWidth, H = innerHeight, wide = W >= 900, range = 1;
   let target = 0, ps = 0;                 // progression de défilement brute / lissée (0..1)
   let eco = fx === "eco";
@@ -374,24 +386,67 @@
   const navLinks = $$("#menu a");
   const dotBtns = $$("button", dotsEl);
 
-  /* --- trajectoire de la caméra : arrêt devant chaque panneau, vol entre eux --- */
-  const ease = (t) => smooth((t - 0.2) / 0.6);
+  /* --- trajectoire de la caméra : arrêt devant chaque panneau, vol entre eux ---------------
+     Chaque vol a sa propre chorégraphie (MOVES). La pose est neutre à l'arrêt (e = 0 ou 1) et ne
+     dévie que pendant le vol (cloche b = sin(πe)). Angles en degrés, x / y en px, k multiplie la
+     perspective (= champ de vision). Les panneaux ont eux aussi une entrée (ENTER) et une sortie
+     (EXIT) propres à chaque vol : le vol i associe MOVES[i], EXIT[i] et ENTER[i + 1]. */
+  const E0 = 0.12, EW = 0.76;             // paliers d'arrêt : 12 % de chaque côté, vol sur 76 %
+  const ease = (t) => smooth((t - E0) / EW);
+  const calm = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  let lat = 1, vert = 1;                  // échelle des écarts latéraux / verticaux (écran étroit, écran bas)
+  const TAU = Math.PI * 2;
+  const MOVES = [
+    { name: "Warp",      fx: 0.55, pose: (e, b) => ({ k: 1 - 0.52 * b }) },                                   // champ de vision qui s'écrase : saut en hyperespace
+    { name: "Tonneau",   fx: 0.3,  pose: (e) => ({ roll: 360 * e }) },                                       // tonneau complet
+    { name: "Orbite",    fx: 0.2,  pose: (e, b) => ({ x: 680 * lat * b, yaw: -36 * b }) },                  // arc de cercle en gardant le regard sur l'axe
+    { name: "Grue",      fx: 0.2,  pose: (e, b) => ({ y: -820 * vert * b, pitch: -30 * b }) },              // la caméra monte au-dessus du couloir et plonge
+    { name: "Hélice",    fx: 0.3,  pose: (e) => { const th = e * TAU, s = Math.sin(th); return { x: 380 * lat * s, y: -300 * vert * (1 - Math.cos(th)), roll: -22 * s, yaw: -12 * s }; } },   // tire-bouchon incliné dans les virages
+    { name: "Vertigo",   fx: 0.1,  pose: (e, b) => ({ k: 1 + 1.7 * b }) },                                   // zoom écrasé : tout se comprime puis se détend
+    { name: "Pirouette", fx: 0.4,  pose: (e) => ({ yaw: -360 * e }) },                                      // tour complet sur soi-même
+  ];
   function camAt(f) {
     f = clamp(f, 0, N - 1);
     const i = Math.min(N - 2, Math.floor(f)), e = ease(f - i);
-    const a = items[i], b = items[i + 1];
+    const a = items[i], b = items[i + 1], m = MOVES[i % MOVES.length];
+    const bell = Math.sin(e * Math.PI), p = calm ? {} : m.pose(e, bell);
     return {
-      x: (a.x + (b.x - a.x) * e) * 0.85,
-      y: Math.sin(e * Math.PI) * -26,
+      x: (a.x + (b.x - a.x) * e) * 0.85 + (p.x || 0),
+      y: bell * -26 + (p.y || 0),
       z: a.z + (b.z - a.z) * e + DWELL,
+      roll: p.roll || 0, yaw: p.yaw || 0, pitch: p.pitch || 0, k: p.k || 1,
+      move: bell > 0.12 ? m.name : "", fx: calm ? 0 : m.fx * bell,
     };
   }
+
+  /* entrées / sorties des panneaux : a = 1 → loin (juste avant le vol) ; 0 → en place.
+     Appliquées au panneau (pas à la carte) pour garder la vraie perspective ; pv() pivote autour d'un bord. */
+  const R2 = (v) => v.toFixed(2);
+  const pv = (it, ox, oy, t) => { const px = (ox * it.w) / 2, py = (oy * it.h) / 2; return `translate3d(${R2(px)}px, ${R2(py)}px, 0) ${t} translate3d(${R2(-px)}px, ${R2(-py)}px, 0)`; };
+  const ENTER = {
+    1: (a) => `translateZ(${R2(-900 * a)}px) scale(${R2(1 - 0.3 * a)})`,                                                    // surgit du fond du tunnel
+    2: (a) => `rotateZ(${R2(-55 * a)}deg) scale(${R2(1 - 0.4 * a)})`,                                                       // arrive en tournoyant
+    3: (a, d, it) => pv(it, -d, 0, `rotateY(${R2(d * 85 * a)}deg)`),                                                         // porte qui s'ouvre
+    4: (a, d, it) => `translateY(${R2(-140 * a)}px) ${pv(it, 0, -1, `rotateX(${R2(-85 * a)}deg)`)}`,                         // se déplie depuis le haut
+    5: (a, d) => `translateX(${R2(d * 900 * a)}px) rotateY(${R2(-d * 40 * a)}deg)`,                                          // glisse depuis le côté
+    6: (a, d, it) => `translateY(${R2(300 * a)}px) ${pv(it, 0, 1, `rotateX(${R2(45 * a)}deg)`)}`,                            // se redresse depuis le bas
+    7: (a) => `rotateZ(${R2(-150 * a)}deg) scale(${R2(1 - 0.65 * a)})`,                                                     // spirale d'arrivée
+  };
+  const EXIT = {
+    0: (x) => `scale(${R2(1 + 1.1 * x)})`,                                                                                   // gonfle et nous dépasse
+    1: (x) => `rotateZ(${R2(80 * x)}deg)`,                                                                                   // pivote
+    2: (x, d, it) => pv(it, d, 0, `rotateY(${R2(-d * 80 * x)}deg)`),                                                         // porte qui claque
+    3: (x, d, it) => `translateY(${R2(420 * x)}px) ${pv(it, 0, 1, `rotateX(${R2(-55 * x)}deg)`)}`,                           // bascule vers nous
+    4: (x, d) => `translateX(${R2(d * 900 * x)}px) rotateY(${R2(-d * 40 * x)}deg)`,                                          // file sur le côté
+    5: (x) => `translateZ(${R2(-800 * x)}px) scale(${R2(1 - 0.3 * x)})`,                                                    // recule dans l'écran
+    6: (x) => `rotateZ(${R2(-120 * x)}deg) scale(${R2(1 - 0.5 * x)})`,                                                      // s'effondre en tournant
+  };
   /* Entre le défilement f et la position réelle de la caméra g, il y a des paliers d'arrêt.
      gOf : f → g ; fOf : g → f. Les vols (bouton, menu, flèches) avancent en g : le mouvement
      démarre tout de suite et ne s'arrête pas à chaque panneau traversé. */
   const sInv = (y) => 0.5 - Math.sin(Math.asin(1 - 2 * clamp(y, 0, 1)) / 3);
   function gOf(f) { f = clamp(f, 0, N - 1); const i = Math.min(N - 2, Math.floor(f)); return i + ease(f - i); }
-  function fOf(g) { g = clamp(g, 0, N - 1); const i = Math.min(N - 2, Math.floor(g)); return i + 0.2 + 0.6 * sInv(g - i); }
+  function fOf(g) { g = clamp(g, 0, N - 1); const i = Math.min(N - 2, Math.floor(g)); return i + E0 + EW * sInv(g - i); }
 
   /* --- vol animé vers un panneau (le défilement réel suit : l'animation au scroll est conservée) --- */
   let fly = null;                         // { g0, g1, i, t0, dur }
@@ -404,7 +459,7 @@
       if (instant) ps = target;
       return;
     }
-    fly = { g0, g1: i, i, t0: performance.now(), dur: clamp(950 + 330 * dist, 1000, 2700) };
+    fly = { g0, g1: i, i, t0: performance.now(), dur: clamp(1150 + 420 * dist, 1300, 3300) };
   }
   function stepFly(now) {
     if (!fly) return;
@@ -475,10 +530,13 @@
   /* --- mise en place ---------------------------------------------------- */
   function layout() {
     W = innerWidth; H = innerHeight; wide = W >= 900;
+    lat = clamp(W / 1200, 0.45, 1); vert = clamp(H / 900, 0.6, 1.2);
     items.forEach((it) => {
       it.x = wide ? it.side * 340 : 0;
       it.ry = wide ? -it.side * 14 : 0;
-      it.el.style.transform = `translate3d(${it.x}px, 0, ${it.z}px) rotateY(${it.ry}deg)`;
+      it.base = `translate3d(${it.x}px, 0, ${it.z}px) rotateY(${it.ry}deg)`;
+      it.el.style.transform = it.tfm = it.base;
+      it.w = it.card.offsetWidth || it.w; it.h = it.card.offsetHeight || it.h;
     });
     spacer.style.height = (N - 1) * SEG * H + H + "px";
     range = Math.max(1, (N - 1) * SEG * H);
@@ -511,11 +569,13 @@
     renderer.setClearColor(0x000000, 0);
     const sc = new THREE.Scene();
     const cam = new THREE.PerspectiveCamera(40, 1, 0.5, 400);
+    cam.rotation.order = "YXZ";                                         // lacet, puis tangage, puis roulis (comme la chaîne CSS)
+    let curP = P;
     function size() {
       renderer.setPixelRatio(Math.min(devicePixelRatio || 1, innerWidth < 900 ? 1.5 : 2));
       renderer.setSize(innerWidth, innerHeight, false);
       cam.aspect = innerWidth / innerHeight;
-      cam.fov = (2 * Math.atan(innerHeight / 2 / P) * 180) / Math.PI;   // même champ que la perspective CSS
+      cam.fov = (2 * Math.atan(innerHeight / 2 / curP) * 180) / Math.PI;   // même champ que la perspective CSS (P2 = k·P)
       cam.updateProjectionMatrix();
     }
     size();
@@ -637,8 +697,16 @@
 
     return {
       size, placePolys, theme,
-      render(cx, cy, cz, f, time) {
+      project(x, y, z) {                                                // test : point du monde (px CSS) → pixel d'écran
+        const v = new THREE.Vector3(x / U, -y / U, z / U).project(cam);
+        return { x: (v.x * 0.5 + 0.5) * innerWidth, y: (-v.y * 0.5 + 0.5) * innerHeight };
+      },
+      render(cx, cy, cz, f, time, pose) {
+        const k = pose ? pose.k : 1, rad = Math.PI / 180;
+        if (Math.abs(P * k - curP) > 0.5) { curP = P * k; size(); }
         cam.position.set(cx / U, -cy / U, (cz + P) / U);
+        cam.rotation.set(pose ? pose.pitch * rad : 0, pose ? -pose.yaw * rad : 0, pose ? pose.roll * rad : 0);
+        cam.updateMatrixWorld(true);
         const eyeZ = cam.position.z;
         polys.forEach((p) => {
           const dist = eyeZ - p.g.position.z;                               // distance à l'œil (unités)
@@ -666,7 +734,11 @@
   /* Boucle                                                              */
   /* ------------------------------------------------------------------ */
   let last = performance.now(), time = 0, intro = 0, hudT = 0, raf = 0, curIdx = -1, hashT = 0;
-  let lastCz = 0, wv = 0, wShown = -1, pShown = "";
+  let lastCz = 0, wv = 0, wShown = -1, pShown = "", lastRoll = 0, lastYaw = 0, lastPitch = 0, lastK = 1, camNow = null;
+  if (window.ResizeObserver) {            // la hauteur des cartes change (dépliages, dépôts chargés) : les pivots restent justes
+    const ro = new ResizeObserver((es) => es.forEach((en) => { const it = items.find((x) => x.card === en.target); if (it) { it.w = en.target.offsetWidth || it.w; it.h = en.target.offsetHeight || it.h; } }));
+    items.forEach((it) => ro.observe(it.card));
+  }
   const perf = { on: fx === "max" && !fxChosen, n: 0, sum: 0, slow: 0, wins: 0 };   // repli automatique si l'animation rame
 
   function setCurrent(i) {
@@ -693,18 +765,25 @@
     mouse.sy += (mouse.y - mouse.sy) * (1 - Math.exp(-dt * 4));
 
     const f = ps * (N - 1), c = camAt(f);
+    camNow = c;
     const cx = c.x + (wide ? mouse.sx * 70 : 0), cy = c.y + (wide ? mouse.sy * 45 : 0);
     const cz = c.z + (1 - smooth(intro)) * 1800;
-    scene.style.transform = `translate3d(${(-cx).toFixed(2)}px, ${(-cy).toFixed(2)}px, ${(-cz).toFixed(2)}px)`;
+    /* l'œil est en (cx, cy, cz + P) ; la rotation se fait autour de l'œil, puis la perspective P2 = k·P le replace */
+    const P2 = Math.round(P * c.k);
+    if (P2 !== world.__p) { world.__p = P2; world.style.perspective = P2 + "px"; }
+    scene.style.transform = `translate3d(0px, 0px, ${P2}px) rotateZ(${c.roll.toFixed(2)}deg) rotateX(${c.pitch.toFixed(2)}deg) rotateY(${c.yaw.toFixed(2)}deg) translate3d(${(-cx).toFixed(2)}px, ${(-cy).toFixed(2)}px, ${(-(cz + P)).toFixed(2)}px)`;
 
-    /* lignes de vitesse : l'opacité suit la vitesse de la caméra */
+    /* lignes de vitesse : l'opacité suit la vitesse (avance + rotations) et l'intensité propre à chaque vol */
     if (!eco) {
-      const vz = Math.abs(cz - lastCz) / Math.max(dt, 0.001);
-      wv += (clamp((vz - 700) / 2600, 0, 1) * 0.55 - wv) * (1 - Math.exp(-dt * 9));
+      const dd = Math.max(dt, 0.001);
+      const vz = Math.abs(cz - lastCz) / dd;
+      const ang = (Math.abs(c.roll - lastRoll) + Math.abs(c.yaw - lastYaw) + Math.abs(c.pitch - lastPitch)) / dd;   // °/s
+      const want = clamp((vz - 700) / 2600, 0, 1) * 0.5 + clamp((ang - 60) / 700, 0, 1) * 0.3 + c.fx * 0.35;
+      wv += (clamp(want, 0, 0.85) - wv) * (1 - Math.exp(-dt * 9));
       const wq = Math.round(wv * 50) / 50;
       if (wq !== wShown) { wShown = wq; warp.style.opacity = wq ? String(wq) : ""; }
     }
-    lastCz = cz;
+    lastCz = cz; lastRoll = c.roll; lastYaw = c.yaw; lastPitch = c.pitch; lastK = c.k;
 
     const idx = clamp(Math.round(f), 0, N - 1);
     for (let i = 0; i < N; i++) {
@@ -722,7 +801,15 @@
         it.el.style.pointerEvents = q > 0.5 ? "" : "none";
       }
       if (q > 0.35 && !it.shown) { it.shown = true; $$("[data-wait]", it.el).forEach(countUp); }
-      const tilt = fine && wide && !eco && i === idx && q > 0.9;
+      /* entrée / sortie propres au panneau (appliquées au panneau : vraie perspective, pivots aux bords) */
+      let fxs = "";
+      if (!calm) {
+        if (dz <= -DWELL) { const a = clamp((-dz - DWELL) / GAP, 0, 1); if (a > 0.003 && ENTER[i]) fxs = ENTER[i](Math.pow(a, 1.5), it.side || 1, it); }
+        else { const x = clamp((dz + DWELL) / 560, 0, 1); if (x > 0.003 && EXIT[i]) fxs = EXIT[i](x, it.side || 1, it); }
+      }
+      const tt = fxs ? it.base + " " + fxs : it.base;
+      if (tt !== it.tfm) { it.tfm = tt; it.el.style.transform = tt; }
+      const tilt = fine && wide && !eco && i === idx && q > 0.9 && !fxs;
       if (tilt) { it.card.style.transform = `rotateX(${(-mouse.sy * 3).toFixed(2)}deg) rotateY(${(mouse.sx * 5).toFixed(2)}deg)`; it.tilt = true; }
       else if (it.tilt) { it.card.style.transform = ""; it.tilt = false; }
     }
@@ -746,10 +833,10 @@
     hudT += dt;
     if (hudT > 0.08) {
       hudT = 0;
-      hud.textContent = `${String(idx + 1).padStart(2, "0")}/${String(N).padStart(2, "0")} · ${items[idx].title.toUpperCase()} · Z ${String(Math.max(0, Math.round(DWELL - cz))).padStart(5, "0")}`;
+      hud.textContent = `${String(idx + 1).padStart(2, "0")}/${String(N).padStart(2, "0")} · ${items[idx].title.toUpperCase()} · Z ${String(Math.max(0, Math.round(DWELL - cz))).padStart(5, "0")}${c.move ? " · " + c.move.toUpperCase() : ""}`;
     }
 
-    if (gl && !eco) gl.render(cx, cy, cz, f, time);
+    if (gl && !eco) gl.render(cx, cy, cz, f, time, c);
 
     /* repli automatique en mode éco si la fluidité reste sous ~24 images/s */
     if (perf.on && intro >= 1 && raw < 0.25) {
@@ -769,7 +856,7 @@
 
   root.classList.add("fly");                                  // d'abord : la page à plat est plus courte que le couloir 3D
   root.classList.toggle("eco", eco);
-  pager.hidden = false;
+  pager.hidden = root.classList.contains("css-bad");
   app.mode3d = true;
   layout();
   const h0 = location.hash.slice(1), i0 = items.findIndex((it) => it.id === h0);
@@ -783,5 +870,10 @@
     else { last = performance.now(); if (fly) fly.t0 += last - hiddenAt; cancelAnimationFrame(raf); raf = requestAnimationFrame(tick); }
   });
   raf = requestAnimationFrame(tick);
-  window.__tour = { goTo, ready: true, count: N, state: () => ({ fly: !!fly, ps, idx: curIdx, eco, fx }) };
+  window.__tour = {
+    goTo, ready: true, count: N,
+    state: () => ({ fly: !!fly, ps, idx: curIdx, eco, fx, cam: camNow }),
+    seek(f) { fly = null; const y = clamp(f / (N - 1), 0, 1) * range; scrollTo(0, y); target = ps = clamp(y / range, 0, 1); },   // test : saute à un défilement précis
+    project(x, y, z) { return gl && gl.project ? gl.project(x, y, z) : null; },
+  };
 })();

@@ -14,7 +14,7 @@
   <meta property="og:site_name" content="ItsPyDevs">
   <meta property="og:locale" content="fr_FR">
   <meta name="twitter:card" content="summary">
-  <script>(function(){var d=document.documentElement,f,a;try{f=localStorage.getItem("ipd-fx");a=localStorage.getItem("ipd-accent")}catch(e){}if(a)d.setAttribute("data-accent",a);if(f==="eco")d.classList.add("eco");if(f!=="flat"&&!matchMedia("(prefers-reduced-motion: reduce)").matches){d.classList.add("js");setTimeout(function(){if(!d.classList.contains("fly"))d.classList.remove("js")},3000)}})()</script>
+  <script>(function(){var d=document.documentElement,f,a,t;try{f=localStorage.getItem("ipd-fx");a=localStorage.getItem("ipd-accent");t=localStorage.getItem("ipd-theme")}catch(e){}if(t==="light")d.setAttribute("data-theme","light");if(a)d.setAttribute("data-accent",a);if(f==="eco")d.classList.add("eco");if(f!=="flat"&&!matchMedia("(prefers-reduced-motion: reduce)").matches){d.classList.add("js");setTimeout(function(){if(!d.classList.contains("fly"))d.classList.remove("js")},3000)}})()</script>
   <link rel="canonical" href="https://itspydevs.github.io/">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"Antoine","alternateName":"ItsPyDevs","url":"https://itspydevs.github.io/","image":"https://github.com/ItsPyDevs.png","jobTitle":"Développeur","knowsAbout":["Python","Rust","Java","C#","Bots Discord","Plugins Minecraft"],"sameAs":["https://github.com/ItsPyDevs"]}</script>
   <link rel="icon" href="FAVICON.ico">
@@ -37,8 +37,9 @@
         <li><a href="#competences" data-go="3">Compétences</a></li>
         <li><a href="#atelier" data-go="4">Atelier</a></li>
         <li><a href="#projets" data-go="5">Projets</a></li>
-        <li><a href="#faq" data-go="6">FAQ</a></li>
-        <li><a href="#contact" data-go="7">Contact</a></li>
+        <li><a href="#activite" data-go="6">Activité</a></li>
+        <li><a href="#faq" data-go="7">FAQ</a></li>
+        <li><a href="#contact" data-go="8">Contact</a></li>
       </ul>
     </nav>
     <button class="kbtn" id="open-pal" type="button" hidden aria-haspopup="dialog" aria-keyshortcuts="Control+K Meta+K /" aria-label="Ouvrir le menu de commandes">
@@ -97,12 +98,16 @@
       <section class="panel" id="competences" data-side="1" data-title="Compétences">
         <div class="card">
           <p class="eyebrow lift">03 · Compétences</p>
-          <h2>Langages et outils</h2>
+          <h2>Ce que je sais construire</h2>
+          <ul class="proof lift">
+            <li><span class="chip hot">Python</span><p><b>Bots Discord</b> (slash commands, cache TTL, logs JSON par utilisateur), <b>application de bureau 100 % locale</b> image + texte (tkinter, diffusers, Ollama), scripts d'automatisation.</p></li>
+            <li><span class="chip hot">Rust</span><p><b>Portage d'un bot Discord</b> (serenity, config rechargée à chaud, historique persistant), <b>client IA en fenêtre native</b> branché sur Ollama.</p></li>
+            <li><span class="chip">JavaScript</span><p><b>Ce site</b> : couloir 3D en CSS, scène WebGL (three.js), polytopes 4D calculés en direct.</p></li>
+            <li><span class="chip">Java · C#</span><p><b>Plugins Minecraft</b> avec Spigot et Maven. <em>En apprentissage</em> (C# : pas encore de projet publié).</p></li>
+            <li><span class="chip">C++</span><p><b>Boîtier ESP8266 éducatif</b> : écran OLED (U8g2), bouton, état sauvegardé en EEPROM, diagnostic série.</p></li>
+          </ul>
           <dl class="skills lift">
-            <div><dt>Principal</dt><dd><span class="chip hot">Python</span></dd></div>
-            <div><dt>J'apprends</dt><dd><span class="chip">Java</span><span class="chip">C#</span><span class="chip">HTML</span><span class="chip">CSS</span></dd></div>
-            <div><dt>À l'occasion</dt><dd><span class="chip">Rust</span><span class="chip">JavaScript</span><span class="chip">SQLite</span><span class="chip">Regex</span></dd></div>
-            <div><dt>Outils</dt><dd><span class="chip">Linux</span><span class="chip">Git</span><span class="chip">GitHub</span><span class="chip">VS Code</span><span class="chip">Visual Studio</span><span class="chip">Eclipse</span><span class="chip">Kivy</span><span class="chip">Spigot</span><span class="chip">Ollama</span></dd></div>
+            <div><dt>Outils</dt><dd><span class="chip">Linux</span><span class="chip">Git</span><span class="chip">GitHub</span><span class="chip">VS Code</span><span class="chip">Visual Studio</span><span class="chip">Eclipse</span><span class="chip">Kivy</span><span class="chip">Spigot</span><span class="chip">Ollama</span><span class="chip">SQLite</span></dd></div>
           </dl>
         </div>
       </section>
@@ -129,21 +134,60 @@
       <section class="panel" id="projets" data-side="1" data-title="Projets">
         <div class="card">
           <p class="eyebrow lift">05 · Projets</p>
-          <h2>Dépôts GitHub</h2>
-          <ul class="repos lift" id="repos">
-            <li><a href="https://github.com/ItsPyDevs/ChloeV2"><b>ChloeV2</b></a></li>
-            <li><a href="https://github.com/ItsPyDevs/GitLive"><b>GitLive</b></a></li>
-            <li><a href="https://github.com/ItsPyDevs/Genderize"><b>Genderize</b></a></li>
-            <li><a href="https://github.com/ItsPyDevs/AskIfGay"><b>AskIfGay</b></a></li>
-            <li><a href="https://github.com/ItsPyDevs/itspydevs.github.io"><b>itspydevs.github.io</b></a></li>
-          </ul>
+          <h2>Projets phares</h2>
+          <div class="projs lift">
+            <article class="proj" data-repo="ChloeV2">
+              <header><h3><a href="https://github.com/ItsPyDevs/ChloeV2">ChloeV2</a></h3><span class="chip hot">Bot Discord</span></header>
+              <p>Bot Discord multi-usage : commandes et outils pour un serveur, dans un seul bot.</p>
+              <p class="stack"><span class="chip">Python</span><span class="chip">API Discord</span></p>
+              <small class="meta"></small>
+            </article>
+            <article class="proj" data-repo="GitLive">
+              <header><h3><a href="https://github.com/ItsPyDevs/GitLive">GitLive</a></h3><span class="chip hot">Outil</span></header>
+              <p>Suivi des commits en direct : voir l'activité d'un dépôt au moment où elle arrive.</p>
+              <p class="stack"><span class="chip">Rust</span><span class="chip">API GitHub</span></p>
+              <small class="meta"></small>
+            </article>
+            <article class="proj" data-repo="itspydevs.github.io">
+              <header><h3><a href="https://github.com/ItsPyDevs/itspydevs.github.io">Ce site</a></h3><span class="chip hot">Web</span></header>
+              <p>Portfolio entièrement en 3D : caméra, scène WebGL et polytopes 4D, sans framework.</p>
+              <p class="stack"><span class="chip">HTML</span><span class="chip">CSS 3D</span><span class="chip">JavaScript</span><span class="chip">three.js</span></p>
+              <small class="meta"></small>
+            </article>
+          </div>
+          <details class="others lift">
+            <summary>Autres dépôts <span id="repo-count"></span></summary>
+            <ul class="repos" id="repos">
+              <li><a href="https://github.com/ItsPyDevs/Genderize"><b>Genderize</b></a></li>
+              <li><a href="https://github.com/ItsPyDevs/AskIfGay"><b>AskIfGay</b></a></li>
+            </ul>
+          </details>
           <p class="more lift"><a href="https://github.com/ItsPyDevs?tab=repositories">Tous les dépôts sur GitHub</a></p>
         </div>
       </section>
 
-      <section class="panel" id="faq" data-side="-1" data-title="FAQ">
+      <section class="panel" id="activite" data-side="-1" data-title="Activité">
         <div class="card">
-          <p class="eyebrow lift">06 · FAQ</p>
+          <p class="eyebrow lift">06 · ACTIVITÉ</p>
+          <h2>Ce que je code en ce moment</h2>
+          <div class="act lift">
+            <div>
+              <h3 class="sub">Langages (mes dépôts)</h3>
+              <div class="langbar" id="langbar" role="img" aria-label="Répartition des langages"></div>
+              <ul class="langs" id="langs"><li>Chargement…</li></ul>
+            </div>
+            <div>
+              <h3 class="sub">Dernière activité publique</h3>
+              <ul class="feed" id="feed"><li>Chargement…</li></ul>
+            </div>
+          </div>
+          <p class="more lift"><a href="https://github.com/ItsPyDevs">Voir tout sur GitHub</a></p>
+        </div>
+      </section>
+
+      <section class="panel" id="faq" data-side="1" data-title="FAQ">
+        <div class="card">
+          <p class="eyebrow lift">07 · FAQ</p>
           <h2>Questions fréquentes</h2>
           <div class="faq lift">
             <details><summary>Tu peux créer un bot Discord pour moi ?</summary><p>Oui, c'est mon terrain de jeu. Explique-moi ce que le bot doit faire et sur quel serveur, et on regarde ensemble.</p></details>
@@ -157,7 +201,7 @@
 
       <section class="panel" id="contact" data-side="0" data-title="Contact">
         <div class="card">
-          <p class="eyebrow lift">07 · Contact</p>
+          <p class="eyebrow lift">08 · CONTACT</p>
           <h2>Parlons de ton projet</h2>
           <p class="lift">Un bot à créer, un outil à automatiser, une idée à tester ? Écris-moi sur Discord.</p>
           <div class="row lift">
@@ -198,7 +242,7 @@
         <button class="pal-x" id="pal-close" type="button" aria-label="Fermer le menu">esc</button>
       </div>
       <ul class="pal-list" id="pal-list" role="listbox" aria-label="Résultats"></ul>
-      <p class="pal-foot" aria-hidden="true"><span><kbd>↑</kbd> <kbd>↓</kbd> naviguer</span><span><kbd>↵</kbd> ouvrir</span><span><kbd>1</kbd>-<kbd>8</kbd> sections</span><span><kbd>←</kbd> <kbd>→</kbd> pas à pas</span></p>
+      <p class="pal-foot" aria-hidden="true"><span><kbd>↑</kbd> <kbd>↓</kbd> naviguer</span><span><kbd>↵</kbd> ouvrir</span><span><kbd>1</kbd>-<kbd>9</kbd> sections</span><span><kbd>←</kbd> <kbd>→</kbd> pas à pas</span></p>
     </div>
   </dialog>
 

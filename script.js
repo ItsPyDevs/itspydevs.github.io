@@ -3,6 +3,7 @@
 
   const root = document.documentElement;
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const can3d = !reduce && !!(window.CSS && CSS.supports && CSS.supports("transform-style", "preserve-3d"));
   const coarse = matchMedia("(pointer: coarse)").matches;
   const fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
   const $ = (s, r) => (r || document).querySelector(s);
@@ -53,8 +54,7 @@
   const panels = $$(".panel"),
     N = panels.length;
   let fx = store.get("fx");
-  const fxChosen = fx === "max" || fx === "eco" || fx === "flat";
-  if (!fxChosen) fx = "max";
+  if (fx !== "max" && fx !== "flat") fx = "eco";
   let accent = store.get("accent");
   if (!THEMES.some((t) => t[0] === accent)) accent = "violet";
   root.setAttribute("data-accent", accent);
@@ -123,69 +123,114 @@
     return "il y a " + Math.floor(d / 365) + (d >= 730 ? " ans" : " an");
   }
 
-  function cached(key, url, ttl) {
+  const HIDE = ["NSFWapp", "Simple-Python-WebHook-Nuker"];
+  const repo = (name, language, description, stars, pushed) => ({
+    name,
+    language,
+    description,
+    stargazers_count: stars,
+    pushed_at: pushed,
+    fork: false,
+    html_url: "https://github.com/" + CONFIG.github + "/" + name,
+  });
+  const evt = (type, name, at) => ({ type, repo: { name: CONFIG.github + "/" + name }, created_at: at, payload: {} });
+  const SNAP = {
+    at: "2026-11-13",
+    user: { public_repos: 15, followers: 6 },
+    repos: [
+      repo("itspydevs.github.io", "JavaScript", null, 0, "2026-11-13T07:58:02Z"),
+      repo(
+        "Genderize",
+        "Java",
+        "A simple app that use an api to tell the gender of a person by his name",
+        0,
+        "2025-10-24T14:17:26Z",
+      ),
+      repo("PyTest", "Java", "application pour apprendre java pour un futur projet", 0, "2025-10-23T12:56:15Z"),
+      repo("ItsPyDevs", null, "my github description", 0, "2025-10-18T13:23:03Z"),
+      repo("NSFWapp", "Python", "Simple Kivy app for fetch nsfw from rule34.xxx", 0, "2024-09-15T18:45:33Z"),
+      repo("SimpleWebhookEmbed", "Python", null, 0, "2024-08-08T16:54:12Z"),
+      repo("ChloeV2", "Python", "simple Discord python bot", 1, "2024-07-01T18:32:41Z"),
+      repo("TimerApp", "C#", "Simple C# app to show time", 0, "2024-06-02T14:28:54Z"),
+      repo("TicTacToe", "Python", "TicTacToe system for play with your friend or against a bot !", 0, "2024-06-02T14:25:59Z"),
+      repo("TTS-python-app", "Python", "Simple Tkinter app for Say things in python", 0, "2024-06-02T14:18:13Z"),
+      repo("AskIfGay", "Python", "All in name.", 0, "2024-05-01T21:30:01Z"),
+      repo("Pycore", "Python", "Pycoré a simple python executor in python", 0, "2023-09-21T20:50:17Z"),
+      repo("GitLive", "Python", "Get Repo Stats in Live", 0, "2023-06-15T21:54:59Z"),
+      repo("Simple-Discord-Log-Bot", "JavaScript", null, 0, "2023-04-20T18:28:52Z"),
+      repo("Simple-Python-WebHook-Nuker", "Python", "Send Discord Message With WebHook !", 0, "2023-03-19T15:31:24Z"),
+    ],
+    events: [
+      evt("WatchEvent", "AskIfGay", "2026-11-12T14:19:58Z"),
+      evt("PushEvent", "itspydevs.github.io", "2026-11-11T07:27:14Z"),
+      evt("PushEvent", "itspydevs.github.io", "2026-11-10T21:19:33Z"),
+      evt("PushEvent", "itspydevs.github.io", "2026-11-09T11:37:58Z"),
+      evt("PushEvent", "itspydevs.github.io", "2026-11-07T22:05:52Z"),
+    ],
+  };
+
+  const RANK = { live: 0, cache: 1, snap: 2 };
+  function getData(key, url, ttl, valid, snap) {
+    let c = null;
     try {
-      const c = JSON.parse(sessionStorage.getItem(key));
-      if (c && Date.now() - c.t < ttl) return Promise.resolve(c.d);
+      c = JSON.parse(store.get("c-" + key));
     } catch (e) {}
+    const hit = c && valid(c.d) ? c : null;
+    if (hit && Date.now() - hit.t < ttl) return Promise.resolve({ d: hit.d, src: "live" });
     return fetch(url)
       .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
       .then((d) => {
-        try {
-          sessionStorage.setItem(key, JSON.stringify({ t: Date.now(), d }));
-        } catch (e) {}
-        return d;
-      });
+        if (!valid(d)) return Promise.reject(0);
+        store.set("c-" + key, JSON.stringify({ t: Date.now(), d }));
+        return { d, src: "live" };
+      })
+      .catch(() => (hit ? { d: hit.d, src: "cache", t: hit.t } : { d: snap, src: "snap" }));
   }
 
   let repoAll = [];
-  function loadRepos() {
+  const byPush = (a, b) => new Date(b.pushed_at) - new Date(a.pushed_at);
+  const metaOf = (r) =>
+    [r.language, r.stargazers_count ? r.stargazers_count + " ★" : "", ago(r.pushed_at)].filter(Boolean).join(" · ");
+
+  function applyRepos(all) {
+    const pub = all.filter((r) => !r.fork);
+    repoAll = pub.filter((r) => r.name !== CONFIG.github && !HIDE.includes(r.name) && r.html_url).sort(byPush);
+    renderLangs(pub);
+    const featured = {};
+    $$(".proj[data-repo]").forEach((art) => {
+      const r = pub.find((x) => x.name === art.dataset.repo);
+      if (!r) return;
+      featured[r.name] = 1;
+      const m = $(".meta", art);
+      if (m) m.textContent = metaOf(r);
+    });
     const ul = $("#repos");
-    cached("gh3d-repos", "https://api.github.com/users/" + CONFIG.github + "/repos?per_page=100&sort=pushed", 600000)
-      .then((all) => {
-        repoAll = all
-          .filter((r) => !r.fork && r.name !== CONFIG.github && r.html_url)
-          .sort((a, b) => new Date(b.pushed_at) - new Date(a.pushed_at));
-        const all2 = all.filter((r) => !r.fork);
-        const metaOf = (r) =>
-          [r.language, r.stargazers_count ? r.stargazers_count + " ★" : "", ago(r.pushed_at)].filter(Boolean).join(" · ");
-        renderLangs(all2);
-        const featured = {};
-        $$(".proj[data-repo]").forEach((art) => {
-          const r = all2.find((x) => x.name === art.dataset.repo);
-          if (!r) return;
-          featured[r.name] = 1;
-          const m = $(".meta", art);
-          if (m) m.textContent = metaOf(r);
-        });
-        if (!ul || !repoAll.length) return;
-        ul.textContent = "";
-        const rest = repoAll.filter((r) => !featured[r.name]);
-        rest.slice(0, 8).forEach((r) => {
-          const li = document.createElement("li"),
-            a = document.createElement("a"),
-            b = document.createElement("b");
-          a.href = r.html_url;
-          b.textContent = r.name;
-          a.appendChild(b);
-          if (r.description) {
-            const p = document.createElement("p");
-            p.textContent = r.description;
-            a.appendChild(p);
-          }
-          const meta = metaOf(r);
-          if (meta) {
-            const s = document.createElement("small");
-            s.textContent = meta;
-            a.appendChild(s);
-          }
-          li.appendChild(a);
-          ul.appendChild(li);
-        });
-        const cnt = $("#repo-count");
-        if (cnt) cnt.textContent = "(" + rest.length + ")";
-      })
-      .catch(() => {});
+    if (!ul || !repoAll.length) return;
+    ul.textContent = "";
+    const rest = repoAll.filter((r) => !featured[r.name]);
+    rest.slice(0, 8).forEach((r) => {
+      const li = document.createElement("li"),
+        a = document.createElement("a"),
+        b = document.createElement("b");
+      a.href = r.html_url;
+      b.textContent = r.name;
+      a.appendChild(b);
+      if (r.description) {
+        const p = document.createElement("p");
+        p.textContent = r.description;
+        a.appendChild(p);
+      }
+      const meta = metaOf(r);
+      if (meta) {
+        const sm = document.createElement("small");
+        sm.textContent = meta;
+        a.appendChild(sm);
+      }
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    const cnt = $("#repo-count");
+    if (cnt) cnt.textContent = "(" + rest.length + ")";
   }
 
   const LANG_COL = {
@@ -232,65 +277,114 @@
       ul.appendChild(li);
     });
   }
-  function loadFeed() {
+  const EVENT_LABEL = {
+    PushEvent: "push",
+    CreateEvent: "création",
+    WatchEvent: "étoile",
+    ForkEvent: "fork",
+    ReleaseEvent: "release",
+    PullRequestEvent: "pull request",
+    IssuesEvent: "ticket",
+    PublicEvent: "public",
+  };
+  function eventText(e, n) {
+    const p = e.payload || {};
+    switch (e.type) {
+      case "PushEvent": {
+        const m = p.commits && p.commits.length ? p.commits[p.commits.length - 1].message.split("\n")[0] : "";
+        return m || (n > 1 ? n + " mises à jour poussées" : "Mise à jour poussée");
+      }
+      case "CreateEvent":
+        if (p.ref_type === "tag") return "Nouveau tag " + (p.ref || "");
+        if (p.ref_type === "branch") return "Nouvelle branche " + (p.ref || "");
+        return "Nouveau dépôt";
+      case "WatchEvent":
+        return "Étoile ajoutée";
+      case "ForkEvent":
+        return "Dépôt forké";
+      case "ReleaseEvent":
+        return "Release " + ((p.release || {}).tag_name || "");
+      case "PullRequestEvent":
+        return "Pull request : " + ((p.pull_request || {}).title || p.action || "");
+      case "IssuesEvent":
+        return "Ticket : " + ((p.issue || {}).title || p.action || "");
+      default:
+        return "Dépôt rendu public";
+    }
+  }
+  function feedItems(ev) {
+    const by = {};
+    ev.forEach((e) => {
+      const name = ((e.repo && e.repo.name) || "").replace(CONFIG.github + "/", "");
+      if (!EVENT_LABEL[e.type] || !name || HIDE.includes(name)) return;
+      const key = name + "|" + e.type;
+      if (by[key]) by[key].n++;
+      else by[key] = { e, name, n: 1 };
+    });
+    return Object.values(by)
+      .map((o) => ({ repo: o.name, k: EVENT_LABEL[o.e.type], t: eventText(o.e, o.n), at: o.e.created_at }))
+      .sort((a, b) => new Date(b.at) - new Date(a.at));
+  }
+  function applyFeed(ev) {
     const ul = $("#feed");
     if (!ul) return;
-    const fail = () => {
-      ul.textContent = "";
+    const items = feedItems(ev).slice(0, 6);
+    ul.textContent = "";
+    if (!items.length) {
       const li = document.createElement("li");
-      li.textContent = "Activité indisponible pour le moment.";
+      li.textContent = "Pas d'activité publique récente.";
       ul.appendChild(li);
-    };
-    cached("ipd-events", "https://api.github.com/users/" + CONFIG.github + "/events/public?per_page=30", 300000)
-      .then((ev) => {
-        const out = [];
-        (ev || []).forEach((e) => {
-          const repo = ((e.repo && e.repo.name) || "").replace(CONFIG.github + "/", "");
-          if (e.type === "PushEvent" && e.payload && e.payload.commits && e.payload.commits.length)
-            out.push({
-              repo,
-              t: e.payload.commits[e.payload.commits.length - 1].message.split("\n")[0],
-              k: "commit",
-              at: e.created_at,
-            });
-          else if (e.type === "CreateEvent" && e.payload && e.payload.ref_type === "repository")
-            out.push({ repo, t: "Nouveau dépôt", k: "création", at: e.created_at });
-          else if (e.type === "ReleaseEvent")
-            out.push({ repo, t: "Release " + ((e.payload.release || {}).tag_name || ""), k: "release", at: e.created_at });
-        });
-        if (!out.length) return fail();
-        ul.textContent = "";
-        out.slice(0, 6).forEach((o) => {
-          const li = document.createElement("li"),
-            k = document.createElement("span"),
-            a = document.createElement("a"),
-            t = document.createElement("p"),
-            s = document.createElement("small");
-          k.textContent = o.k;
-          a.href = "https://github.com/" + CONFIG.github + "/" + o.repo;
-          a.textContent = o.repo;
-          t.textContent = o.t;
-          s.textContent = ago(o.at);
-          li.append(k, a, t, s);
-          ul.appendChild(li);
-        });
-      })
-      .catch(fail);
+      return;
+    }
+    items.forEach((o) => {
+      const li = document.createElement("li"),
+        k = document.createElement("span"),
+        a = document.createElement("a"),
+        t = document.createElement("p"),
+        s = document.createElement("small");
+      k.textContent = o.k;
+      a.href = "https://github.com/" + CONFIG.github + "/" + o.repo;
+      a.textContent = o.repo;
+      t.textContent = o.t;
+      s.textContent = ago(o.at);
+      li.append(k, a, t, s);
+      ul.appendChild(li);
+    });
   }
 
-  function loadStats() {
-    const nodes = $$("#stats b[data-key]");
-    if (!nodes.length) return;
-    cached("gh3d-user", "https://api.github.com/users/" + CONFIG.github, 600000)
-      .then((u) =>
-        nodes.forEach((n) => {
-          const v = u[n.dataset.key];
-          if (typeof v !== "number") return;
-          n.dataset.val = String(v);
-          if (!n.dataset.wait) n.textContent = v;
-        }),
-      )
-      .catch(() => {});
+  function applyUser(u) {
+    $$("#stats b[data-key]").forEach((n) => {
+      const v = u[n.dataset.key];
+      if (typeof v !== "number") return;
+      n.dataset.val = String(v);
+      if (!n.dataset.wait) n.textContent = v;
+    });
+  }
+
+  const fmtDate = (t) => new Date(t).toLocaleDateString("fr-FR");
+  function showSource(rs) {
+    const note = $("#act-note");
+    if (!note) return;
+    const w = rs.reduce((a, r) => (RANK[r.src] > RANK[a.src] ? r : a), rs[0]);
+    if (w.src === "live") note.textContent = "Données en direct de GitHub.";
+    else if (w.src === "cache") note.textContent = "GitHub injoignable : données enregistrées le " + fmtDate(w.t) + ".";
+    else note.textContent = "GitHub injoignable : instantané du " + fmtDate(SNAP.at) + ".";
+  }
+
+  function loadData() {
+    applyRepos(SNAP.repos);
+    applyFeed(SNAP.events);
+    applyUser(SNAP.user);
+    const note = $("#act-note");
+    if (note) note.textContent = "Instantané du " + fmtDate(SNAP.at) + " · mise à jour en cours…";
+    const base = "https://api.github.com/users/" + CONFIG.github;
+    Promise.all([
+      getData("repos", base + "/repos?per_page=100&sort=pushed", 600000, Array.isArray, SNAP.repos).then(
+        (r) => (applyRepos(r.d), r),
+      ),
+      getData("events", base + "/events/public?per_page=50", 300000, Array.isArray, SNAP.events).then((r) => (applyFeed(r.d), r)),
+      getData("user", base, 3600000, (d) => d && typeof d.public_repos === "number", SNAP.user).then((r) => (applyUser(r.d), r)),
+    ]).then(showSource);
   }
 
   function initCopy() {
@@ -309,9 +403,7 @@
     });
   }
 
-  loadRepos();
-  loadFeed();
-  loadStats();
+  loadData();
   initCopy();
 
   const shareUrl = (i) => location.href.split("#")[0] + "#" + panels[i].id;
@@ -398,8 +490,8 @@
       add("Imprimer / enregistrer en PDF", "mise en page propre", "imprimer pdf cv export", () => window.print(), "⎙");
       if (!reduce) {
         [
-          ["max", "Qualité maximale", "3D, WebGL et tous les effets"],
-          ["eco", "Mode éco", "3D allégée, sans WebGL"],
+          ["max", "Mode 3D (qualité maximale)", "WebGL et tous les effets"],
+          ["eco", "Mode éco (par défaut)", "3D allégée, sans WebGL"],
           ["flat", "Version simple", "page à plat, sans animation"],
         ].forEach((m) =>
           c.push({
@@ -579,7 +671,7 @@
   }
   const palette = initPalette();
 
-  function setFx(mode, opts) {
+  function setFx(mode) {
     if (mode === fx) return;
     const prev = fx;
     fx = mode;
@@ -590,8 +682,27 @@
     }
     root.classList.toggle("eco", mode === "eco");
     if (app.applyFx) app.applyFx(mode);
-    if (!(opts && opts.auto)) toast(mode === "eco" ? "Mode éco activé" : "Qualité maximale activée");
+    syncModeBtn();
+    toast(mode === "eco" ? "Mode éco activé" : "Mode 3D activé");
   }
+  function syncModeBtn() {
+    const b = $("#mode3d");
+    if (!b) return;
+    const on = fx === "max";
+    b.setAttribute("aria-pressed", String(on));
+    b.title = on ? "3D activée : repasser en mode éco" : "Afficher en 3D";
+  }
+  (function initModeBtn() {
+    const b = $("#mode3d");
+    if (!b || !can3d) return;
+    b.hidden = false;
+    b.addEventListener("click", () => setFx(fx === "max" ? "eco" : "max"));
+    syncModeBtn();
+    if (fx === "eco" && !store.get("hint3d")) {
+      store.set("hint3d", "1");
+      setTimeout(() => toast("Mode éco actif. Le bouton 3D affiche la version complète."), 2800);
+    }
+  })();
   function setAccent(id) {
     accent = id;
     root.setAttribute("data-accent", id);
@@ -870,7 +981,7 @@
   })();
 
   const progress = $("#progress i");
-  if (reduce || fx === "flat" || !(window.CSS && CSS.supports && CSS.supports("transform-style", "preserve-3d"))) {
+  if (!can3d || fx === "flat") {
     if (progress) {
       const upd = () => {
         const m = root.scrollHeight - innerHeight;
@@ -1533,7 +1644,6 @@
 
   app.applyFx = (mode) => {
     eco = mode === "eco";
-    perf.on = false;
     if (!eco && ensureGL()) {
       gl.size();
       gl.placePolys();
@@ -1571,7 +1681,6 @@
     );
     items.forEach((it) => ro.observe(it.card));
   }
-  const perf = { on: fx === "max" && !fxChosen, n: 0, sum: 0, slow: 0, wins: 0 };
 
   function setCurrent(i) {
     if (i === curIdx) return;
@@ -1712,25 +1821,6 @@
     }
 
     if (gl && !eco) gl.render(cx, cy, cz, f, time, c);
-
-    if (perf.on && intro >= 1 && raw < 0.25) {
-      perf.sum += raw;
-      if (++perf.n >= 80) {
-        if (perf.sum / perf.n > 1 / 24) {
-          if (++perf.slow >= 2) {
-            perf.on = false;
-            autoEco();
-          }
-        } else perf.slow = 0;
-        perf.n = 0;
-        perf.sum = 0;
-        if (++perf.wins > 12) perf.on = false;
-      }
-    }
-  }
-  function autoEco() {
-    setFx("eco", { auto: true });
-    toast("Animation allégée pour rester fluide.", { label: "Annuler", run: () => setFx("max") });
   }
   function tick(now) {
     raf = requestAnimationFrame(tick);

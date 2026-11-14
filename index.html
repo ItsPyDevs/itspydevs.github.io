@@ -14,7 +14,7 @@
   <meta property="og:site_name" content="ItsPyDevs">
   <meta property="og:locale" content="fr_FR">
   <meta name="twitter:card" content="summary">
-  <script>(function(){var d=document.documentElement,f,a,t;try{f=localStorage.getItem("ipd-fx");a=localStorage.getItem("ipd-accent");t=localStorage.getItem("ipd-theme")}catch(e){}if(t==="light")d.setAttribute("data-theme","light");if(a)d.setAttribute("data-accent",a);if(f==="eco")d.classList.add("eco");if(f!=="flat"&&!matchMedia("(prefers-reduced-motion: reduce)").matches){d.classList.add("js");setTimeout(function(){if(!d.classList.contains("fly"))d.classList.remove("js")},3000)}})()</script>
+  <script>(function(){var d=document.documentElement,f,a,t;try{f=localStorage.getItem("ipd-fx");a=localStorage.getItem("ipd-accent");t=localStorage.getItem("ipd-theme")}catch(e){}if(t==="light")d.setAttribute("data-theme","light");if(a)d.setAttribute("data-accent",a);if(f!=="max"&&f!=="flat")d.classList.add("eco");if(f!=="flat"&&!matchMedia("(prefers-reduced-motion: reduce)").matches){d.classList.add("js");setTimeout(function(){if(!d.classList.contains("fly"))d.classList.remove("js")},3000)}})()</script>
   <link rel="canonical" href="https://itspydevs.github.io/">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"Antoine","alternateName":"ItsPyDevs","url":"https://itspydevs.github.io/","image":"https://github.com/ItsPyDevs.png","jobTitle":"Développeur","knowsAbout":["Python","Rust","Java","C#","Bots Discord","Plugins Minecraft"],"sameAs":["https://github.com/ItsPyDevs"]}</script>
   <link rel="icon" href="FAVICON.ico">
@@ -42,6 +42,7 @@
         <li><a href="#contact" data-go="8">Contact</a></li>
       </ul>
     </nav>
+    <button class="kbtn mode" id="mode3d" type="button" hidden aria-pressed="false" aria-label="Afficher en 3D">3D</button>
     <button class="kbtn" id="open-pal" type="button" hidden aria-haspopup="dialog" aria-keyshortcuts="Control+K Meta+K /" aria-label="Ouvrir le menu de commandes">
       <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M8.5 3a5.5 5.5 0 1 0 3.4 9.8l3.6 3.6 1.1-1.1-3.6-3.6A5.5 5.5 0 0 0 8.5 3Zm0 1.5a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z" fill="currentColor"/></svg>
       <span class="kbtn-t">Menu</span><kbd>Ctrl K</kbd>
@@ -100,10 +101,10 @@
           <p class="eyebrow lift">03 · Compétences</p>
           <h2>Ce que je sais construire</h2>
           <ul class="proof lift">
-            <li><span class="chip hot">Python</span><p><b>Bots Discord</b> (slash commands, cache TTL, logs JSON par utilisateur), <b>application de bureau 100 % locale</b> image + texte (tkinter, diffusers, Ollama), scripts d'automatisation.</p></li>
+            <li><span class="chip hot">Python</span><p><b>Bots Discord</b> (ChloeV2, slash commands, cache TTL, logs JSON par utilisateur), <b>application de bureau 100 % locale</b> image + texte (tkinter, diffusers, Ollama), petits jeux et outils (TicTacToe contre un bot, synthèse vocale).</p></li>
             <li><span class="chip hot">Rust</span><p><b>Portage d'un bot Discord</b> (serenity, config rechargée à chaud, historique persistant), <b>client IA en fenêtre native</b> branché sur Ollama.</p></li>
-            <li><span class="chip">JavaScript</span><p><b>Ce site</b> : couloir 3D en CSS, scène WebGL (three.js), polytopes 4D calculés en direct.</p></li>
-            <li><span class="chip">Java · C#</span><p><b>Plugins Minecraft</b> avec Spigot et Maven. <em>En apprentissage</em> (C# : pas encore de projet publié).</p></li>
+            <li><span class="chip">JavaScript</span><p><b>Ce site</b> : couloir 3D en CSS, scène WebGL (three.js), polytopes 4D calculés en direct. Plus un bot de logs Discord.</p></li>
+            <li><span class="chip">Java · C#</span><p><b>Plugins Minecraft</b> avec Spigot et Maven, <b>Genderize</b> (appli Java qui interroge une API), <b>TimerApp</b> en C#. <em>En apprentissage.</em></p></li>
             <li><span class="chip">C++</span><p><b>Boîtier ESP8266 éducatif</b> : écran OLED (U8g2), bouton, état sauvegardé en EEPROM, diagnostic série.</p></li>
           </ul>
           <dl class="skills lift">
@@ -138,14 +139,14 @@
           <div class="projs lift">
             <article class="proj" data-repo="ChloeV2">
               <header><h3><a href="https://github.com/ItsPyDevs/ChloeV2">ChloeV2</a></h3><span class="chip hot">Bot Discord</span></header>
-              <p>Bot Discord multi-usage : commandes et outils pour un serveur, dans un seul bot.</p>
+              <p>Bot Discord simple, écrit en Python.</p>
               <p class="stack"><span class="chip">Python</span><span class="chip">API Discord</span></p>
               <small class="meta"></small>
             </article>
             <article class="proj" data-repo="GitLive">
               <header><h3><a href="https://github.com/ItsPyDevs/GitLive">GitLive</a></h3><span class="chip hot">Outil</span></header>
-              <p>Suivi des commits en direct : voir l'activité d'un dépôt au moment où elle arrive.</p>
-              <p class="stack"><span class="chip">Rust</span><span class="chip">API GitHub</span></p>
+              <p>Statistiques d'un dépôt GitHub en direct.</p>
+              <p class="stack"><span class="chip">Python</span><span class="chip">API GitHub</span></p>
               <small class="meta"></small>
             </article>
             <article class="proj" data-repo="itspydevs.github.io">
@@ -172,7 +173,7 @@
           <h2>Ce que je code en ce moment</h2>
           <div class="act lift">
             <div>
-              <h3 class="sub">Langages (mes dépôts)</h3>
+              <h3 class="sub">Langages (dépôts publics)</h3>
               <div class="langbar" id="langbar" role="img" aria-label="Répartition des langages"></div>
               <ul class="langs" id="langs"><li>Chargement…</li></ul>
             </div>
@@ -181,6 +182,7 @@
               <ul class="feed" id="feed"><li>Chargement…</li></ul>
             </div>
           </div>
+          <p class="note lift" id="act-note"></p>
           <p class="more lift"><a href="https://github.com/ItsPyDevs">Voir tout sur GitHub</a></p>
         </div>
       </section>
